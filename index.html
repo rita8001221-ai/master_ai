@@ -1,1 +1,184 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Master AI Platform - Admin Panel</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f5f6fa; padding: 10px; color: #333; }
+        
+        /* Header Styling */
+        .header { display: flex; justify-content: space-between; align-items: center; padding: 12px 15px; background: #fff; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); margin-bottom: 15px; }
+        .header-left { display: flex; align-items: center; }
+        .menu-icon { font-size: 24px; cursor: pointer; margin-right: 10px; color: #2c3e50; font-weight: bold; }
+        .header h2 { margin: 0; color: #1e3799; font-size: 18px; }
+        .header-buttons { display: flex; gap: 8px; }
+        
+        .owner-mode { background: #d35400; color: white; border: none; padding: 6px 12px; border-radius: 20px; font-weight: bold; font-size: 12px; cursor: pointer; }
+        .maint-toggle { background: #e67e22; color: white; border: none; padding: 6px 12px; border-radius: 20px; font-weight: bold; font-size: 12px; cursor: pointer; }
+        
+        /* Sidebar Styling */
+        .sidebar { height: 100%; width: 0; position: fixed; z-index: 1000; top: 0; left: 0; background-color: #2c3e50; overflow-x: hidden; transition: 0.3s; padding-top: 60px; box-shadow: 2px 0 5px rgba(0,0,0,0.2); }
+        .sidebar a { padding: 12px 15px 12px 30px; text-decoration: none; font-size: 16px; color: #ecf0f1; display: block; transition: 0.2s; font-weight: bold; cursor: pointer; }
+        .sidebar a:hover { color: #3498db; background-color: #34495e; }
+        .sidebar .closebtn { position: absolute; top: 10px; right: 20px; font-size: 30px; color: #fff; background: none; border: none; cursor: pointer; }
+        
+        /* Master AI Box */
+        .ai-box { border: 2px solid #3498db; background: #fff; padding: 15px; border-radius: 15px; margin-bottom: 20px; box-shadow: 0 4px 10px rgba(52, 152, 219, 0.1); }
+        .ai-title { font-weight: bold; font-size: 18px; margin-bottom: 10px; color: #2c3e50; }
+        .ai-message { background: #eef2ff; color: #1e3799; padding: 12px; border-radius: 8px; margin-bottom: 15px; font-size: 14px; font-weight: 500; }
+        .input-group { display: flex; gap: 10px; }
+        .input-group input { flex: 1; padding: 12px; border: 1px solid #ccc; border-radius: 8px; outline: none; font-size: 14px; }
+        .input-group button { background: #0984e3; color: white; border: none; padding: 12px 20px; border-radius: 8px; font-weight: bold; cursor: pointer; }
+        
+        /* Project Cards Grid */
+        .section-title { font-size: 15px; font-weight: bold; margin: 15px 0 10px 0; color: #2c3e50; display: flex; justify-content: space-between; align-items: center; }
+        .grid-container { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 10px; }
+        .card { background: #fff; border-top: 4px solid #e74c3c; padding: 12px 5px; text-align: center; border-radius: 10px; box-shadow: 0 2px 6px rgba(0,0,0,0.05); font-size: 12px; font-weight: bold; cursor: pointer; transition: 0.2s; }
+        .card:active { transform: scale(0.95); }
+        .card.green-top { border-top-color: #2ecc71; }
+        .card-icon { font-size: 24px; margin-bottom: 4px; }
+        .manage-card { border-top-color: #34495e; background: #f8f9fa; border: 2px dashed #95a5a6; }
+        
+        .add-btn { width: 100%; padding: 10px; background: #eef2f5; border: 2px dashed #b2bec3; border-radius: 10px; cursor: pointer; font-weight: bold; color: #636e72; margin-bottom: 15px; }
+        
+        /* Social Box & Search */
+        .social-box { background: #fff; padding: 15px; border-radius: 15px; box-shadow: 0 2px 6px rgba(0,0,0,0.05); margin-bottom: 20px; text-align: center; }
+        .search-bar { width: 100%; padding: 10px 15px; border: 1px solid #ddd; border-radius: 20px; margin-bottom: 15px; background: #f8f9fa; outline: none; font-size: 13px; }
+        .social-buttons { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px; }
+        .social-buttons button { border: none; padding: 8px 14px; border-radius: 20px; color: white; font-size: 12px; font-weight: bold; cursor: pointer; }
+        .btn-whatsapp { background: #2ecc71; } .btn-telegram { background: #0984e3; } .btn-youtube { background: #e74c3c; } .btn-facebook { background: #3b5998; } .btn-instagram { background: #e84393; }
 
+        /* Stats Box */
+        .stats-box { display: flex; justify-content: space-between; align-items: center; background: #fff; padding: 12px 15px; border-radius: 15px; box-shadow: 0 2px 6px rgba(0,0,0,0.05); margin-bottom: 20px; }
+        .follow-btn { background: #0984e3; color: white; border: none; padding: 8px 22px; border-radius: 20px; font-weight: bold; cursor: pointer; }
+
+        /* Overlays */
+        .overlay-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.7); z-index: 9999; display: flex; justify-content: center; align-items: flex-start; padding: 20px; overflow-y: auto; backdrop-filter: blur(5px); }
+        .manager-modal { background: #fff; padding: 20px; border-radius: 15px; width: 100%; max-width: 400px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); margin-top: 20px; }
+        .manager-modal h3 { margin-top: 0; color: #2c3e50; }
+        .manager-section-title { font-size: 14px; font-weight: bold; color: #e74c3c; margin-top: 15px; margin-bottom: 10px; border-bottom: 2px solid #eee; padding-bottom: 5px; }
+        .manager-section-title.public { color: #2ecc71; }
+        
+        .manager-row { display: flex; gap: 5px; margin-bottom: 8px; align-items: center; background: #f8f9fa; padding: 8px; border-radius: 8px; border: 1px solid #ddd; }
+        .manager-row input.icon-input { width: 45px; padding: 8px; text-align: center; border: 1px solid #ccc; border-radius: 5px; font-size: 14px; }
+        .manager-row input.name-input { flex: 1; padding: 8px; border: 1px solid #ccc; border-radius: 5px; font-size: 13px; font-weight: bold; }
+        .manager-row button { padding: 8px; border: none; border-radius: 5px; cursor: pointer; font-size: 12px; }
+        .btn-updown { background: #3498db; color: white; }
+        .btn-del { background: #e74c3c; color: white; }
+        
+        .modal-actions { display: flex; gap: 10px; margin-top: 20px; }
+        .btn-save { background: #2ecc71; color: white; border: none; padding: 12px; border-radius: 8px; font-weight: bold; cursor: pointer; flex: 1; }
+        .btn-close { background: #95a5a6; color: white; border: none; padding: 12px; border-radius: 8px; font-weight: bold; cursor: pointer; flex: 1; }
+    </style>
+</head>
+<body>
+
+    <div id="mySidebar" class="sidebar">
+        <button class="closebtn" onclick="closeNav()">×</button>
+        <a onclick="goHome()">🏠 Home</a>
+        <a onclick="openProfile()">👤 Profile</a>
+        <a onclick="openSupport()">📞 Support</a>
+        <hr style="border-color: #34495e; margin: 10px 20px;">
+        <a onclick="sharePlatformNative()" style="color: #2ecc71;">🔗 Share Platform</a>
+        <a id="sidebar-agent-ctrl" onclick="openAgentControl()" style="color: #f39c12;">🤖 Agent Control</a>
+    </div>
+
+    <!-- Manager Screen -->
+    <div id="card-manager-screen" class="overlay-screen" style="display: none;">
+        <div class="manager-modal">
+            <h3>🛠️ Card Control Panel</h3>
+            <p style="font-size: 12px; color: #7f8c8d; margin-bottom: 15px;">এখানে নাম/ছবি এডিট করুন এবং ⬆️ ⬇️ দিয়ে সাজান।</p>
+            <div class="manager-section-title">🔒 Private Cards</div>
+            <div id="manager-private-list"></div>
+            <div class="manager-section-title public">🌐 Public Cards</div>
+            <div id="manager-public-list"></div>
+            <div class="modal-actions">
+                <button class="btn-close" onclick="closeManager()">✖ Cancel</button>
+                <button class="btn-save" onclick="saveManager()">💾 Save Updates</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="header">
+        <div class="header-left">
+            <span class="menu-icon" onclick="openNav()">☰</span>
+            <h2>Master AI</h2>
+        </div>
+        <div class="header-buttons">
+            <button class="maint-toggle" id="maint-btn">⚙️ Update Mode: OFF</button>
+            <button class="owner-mode">Owner: ON</button>
+        </div>
+    </div>
+
+    <div class="ai-box" id="master-ai-section">
+        <div class="ai-title">🤖 Master AI</div>
+        <div class="ai-message">আমি প্রস্তুত। আমাকে কমান্ড দিন।</div>
+        <div class="input-group">
+            <input type="text" id="ai-command" placeholder="যেমন: নতুন প্রজেক্ট অ্যাড করো...">
+            <button onclick="sendAgentCommand()">Send</button>
+        </div>
+    </div>
+
+    <div class="social-box">
+        <input type="text" id="main-search" class="search-bar" placeholder="🔍 Search (apps, agents, users)..." onkeyup="filterCards()">
+        <div class="section-title" style="text-align: left; margin-top: 0; margin-bottom: 10px;">Social Results:</div>
+        <div class="social-buttons">
+            <button class="btn-whatsapp">💬 WhatsApp</button>
+            <button class="btn-telegram">✈️ Telegram</button>
+            <button class="btn-youtube">▶️ YouTube</button>
+            <button class="btn-facebook">📘 Facebook</button>
+            <button class="btn-instagram">📷 Instagram</button>
+        </div>
+    </div>
+
+    <div class="stats-box" id="stats-box-id">
+        <div>👥 <strong id="follower-count-text">0 Followers</strong></div>
+        <button class="follow-btn" id="follow-action-btn">Follow</button>
+    </div>
+
+    <div class="section-title" id="private-header">
+        <span>🔒 Private Projects (Owner)</span>
+    </div>
+    
+    <div class="grid-container" id="private-grid">
+        <div class="card manage-card" onclick="openManager()">
+            <div class="card-icon">🛠️</div><span class="card-title-text" style="color: #2c3e50;">MANAGE</span><br><small style="color: #e74c3c; font-weight: bold;">Edit Cards</small>
+        </div>
+        <div class="card normal-card"><div class="card-icon">📱</div><span class="card-title-text">APP</span><br><small style="font-weight: normal; color: #7f8c8d;">Client</small></div>
+        <div class="card normal-card"><div class="card-icon">🛒</div><span class="card-title-text">SHOP</span><br><small style="font-weight: normal; color: #7f8c8d;">Store</small></div>
+        <div class="card normal-card"><div class="card-icon">💼</div><span class="card-title-text">WEB</span><br><small style="font-weight: normal; color: #7f8c8d;">Portfolio</small></div>
+        <div class="card normal-card"><div class="card-icon">⚙️</div><span class="card-title-text">TOOLS</span><br><small style="font-weight: normal; color: #7f8c8d;">Admin</small></div>
+    </div>
+    
+    <button class="add-btn" id="add-priv-btn" onclick="addCard('private-grid', 'red')">+ Add New Private Project</button>
+    <button class="add-btn" id="add-pub-btn" onclick="addCard('public-grid', 'green')" style="margin-top: -5px;">+ Add New Public Project</button>
+
+    <div class="section-title">🌐 Public Projects (Users)</div>
+    <div class="grid-container" id="public-grid">
+        <div class="card normal-card green-top"><div class="card-icon">📝</div><span class="card-title-text">BLOG</span><br><small style="font-weight: normal; color: #7f8c8d;">Blogs</small></div>
+        <div class="card normal-card green-top"><div class="card-icon">🎬</div><span class="card-title-text">VIDEO</span><br><small style="font-weight: normal; color: #7f8c8d;">Videos</small></div>
+        <div class="card normal-card green-top"><div class="card-icon">🎮</div><span class="card-title-text">GAME</span><br><small style="font-weight: normal; color: #7f8c8d;">Gaming</small></div>
+        <div class="card normal-card green-top"><div class="card-icon">💬</div><span class="card-title-text">CHAT</span><br><small style="font-weight: normal; color: #7f8c8d;">Public</small></div>
+    </div>
+
+    <script>
+        function openNav() { document.getElementById("mySidebar").style.width = "250px"; }
+        function closeNav() { document.getElementById("mySidebar").style.width = "0"; }
+        function openManager() { document.getElementById('card-manager-screen').style.display = 'flex'; }
+        function closeManager() { document.getElementById('card-manager-screen').style.display = 'none'; }
+        
+        function sharePlatformNative() {
+            closeNav();
+            const publicUrl = "https://masteraiplatform.com";
+            if (navigator.share) {
+                navigator.share({ title: 'Master AI Platform', url: publicUrl }).catch(console.error);
+            } else {
+                navigator.clipboard.writeText(publicUrl);
+                alert("✅ লিংক কপি হয়েছে!\n( " + publicUrl + " )");
+            }
+        }
+    </script>
+</body>
+</html>
