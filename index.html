@@ -1,83 +1,42 @@
-
 <!DOCTYPE html>
 <html lang="bn">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Master AI Platform</title>
+    <meta name="description" content="Master AI Official Digital Platform & Media Content Creator">
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f5f6fa; padding: 10px; color: #333; }
         
-        /* Header Styling */
         .header { display: flex; justify-content: space-between; align-items: center; padding: 12px 15px; background: #fff; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); margin-bottom: 15px; }
         .header-left { display: flex; align-items: center; }
         .menu-icon { font-size: 24px; cursor: pointer; margin-right: 10px; color: #2c3e50; font-weight: bold; }
         .header h2 { margin: 0; color: #1e3799; font-size: 18px; }
-        .header-buttons { display: flex; gap: 8px; }
         
-        .owner-mode { background: #2ecc71; color: white; border: none; padding: 6px 12px; border-radius: 20px; font-weight: bold; font-size: 12px; cursor: pointer; transition: 0.3s; }
-        .maint-toggle { display: none; background: #e67e22; color: white; border: none; padding: 6px 12px; border-radius: 20px; font-weight: bold; font-size: 12px; cursor: pointer; }
-        
-        /* Hidden elements for public */
-        .owner-only { display: none !important; }
-        
-        /* Sidebar Styling */
         .sidebar { height: 100%; width: 0; position: fixed; z-index: 1000; top: 0; left: 0; background-color: #2c3e50; overflow-x: hidden; transition: 0.3s; padding-top: 60px; box-shadow: 2px 0 5px rgba(0,0,0,0.2); }
         .sidebar a { padding: 12px 15px 12px 30px; text-decoration: none; font-size: 16px; color: #ecf0f1; display: block; transition: 0.2s; font-weight: bold; cursor: pointer; }
         .sidebar a:hover { color: #3498db; background-color: #34495e; }
         .sidebar .closebtn { position: absolute; top: 10px; right: 20px; font-size: 30px; color: #fff; background: none; border: none; cursor: pointer; }
         
-        /* Master AI Box (Owner Only) */
-        .ai-box { border: 2px solid #3498db; background: #fff; padding: 15px; border-radius: 15px; margin-bottom: 20px; box-shadow: 0 4px 10px rgba(52, 152, 219, 0.1); }
-        .ai-title { font-weight: bold; font-size: 18px; margin-bottom: 10px; color: #2c3e50; }
-        .ai-message { background: #eef2ff; color: #1e3799; padding: 12px; border-radius: 8px; margin-bottom: 15px; font-size: 14px; font-weight: 500; }
-        .input-group { display: flex; gap: 10px; }
-        .input-group input { flex: 1; padding: 12px; border: 1px solid #ccc; border-radius: 8px; outline: none; font-size: 14px; }
-        .input-group button { background: #0984e3; color: white; border: none; padding: 12px 20px; border-radius: 8px; font-weight: bold; cursor: pointer; }
-        
-        /* Project Cards Grid */
         .section-title { font-size: 15px; font-weight: bold; margin: 15px 0 10px 0; color: #2c3e50; display: flex; justify-content: space-between; align-items: center; }
         .grid-container { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 10px; }
-        .card { background: #fff; border-top: 4px solid #e74c3c; padding: 12px 5px; text-align: center; border-radius: 10px; box-shadow: 0 2px 6px rgba(0,0,0,0.05); font-size: 12px; font-weight: bold; cursor: pointer; transition: 0.2s; }
+        .card { background: #fff; border-top: 4px solid #2ecc71; padding: 12px 5px; text-align: center; border-radius: 10px; box-shadow: 0 2px 6px rgba(0,0,0,0.05); font-size: 12px; font-weight: bold; cursor: pointer; transition: 0.2s; }
         .card:active { transform: scale(0.95); }
-        .card.green-top { border-top-color: #2ecc71; }
         .card-icon { font-size: 24px; margin-bottom: 4px; }
-        .manage-card { border-top-color: #34495e; background: #f8f9fa; border: 2px dashed #95a5a6; }
         
-        .add-btn { width: 100%; padding: 10px; background: #eef2f5; border: 2px dashed #b2bec3; border-radius: 10px; cursor: pointer; font-weight: bold; color: #636e72; margin-bottom: 15px; }
-        .toggle-btn-small { background: #bdc3c7; border: none; padding: 4px 8px; border-radius: 5px; font-size: 10px; font-weight: bold; cursor: pointer; }
-        
-        /* Social Box & Search */
         .social-box { background: #fff; padding: 15px; border-radius: 15px; box-shadow: 0 2px 6px rgba(0,0,0,0.05); margin-bottom: 20px; text-align: center; }
         .search-bar { width: 100%; padding: 10px 15px; border: 1px solid #ddd; border-radius: 20px; margin-bottom: 15px; background: #f8f9fa; outline: none; font-size: 13px; }
         .social-buttons { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px; }
         .social-buttons button { border: none; padding: 8px 14px; border-radius: 20px; color: white; font-size: 12px; font-weight: bold; cursor: pointer; }
         .btn-whatsapp { background: #2ecc71; } .btn-telegram { background: #0984e3; } .btn-youtube { background: #e74c3c; } .btn-facebook { background: #3b5998; } .btn-instagram { background: #e84393; }
 
-        /* Stats Box */
         .stats-box { display: flex; justify-content: space-between; align-items: center; background: #fff; padding: 12px 15px; border-radius: 15px; box-shadow: 0 2px 6px rgba(0,0,0,0.05); margin-bottom: 20px; }
         .follow-btn { background: #0984e3; color: white; border: none; padding: 8px 22px; border-radius: 20px; font-weight: bold; cursor: pointer; }
 
-        /* Overlays */
-        .overlay-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.7); z-index: 9999; display: flex; justify-content: center; align-items: flex-start; padding: 20px; overflow-y: auto; backdrop-filter: blur(5px); }
-        .manager-modal { background: #fff; padding: 20px; border-radius: 15px; width: 100%; max-width: 400px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); margin-top: 20px; }
-        .manager-modal h3 { margin-top: 0; color: #2c3e50; }
-        .manager-section-title { font-size: 14px; font-weight: bold; color: #e74c3c; margin-top: 15px; margin-bottom: 10px; border-bottom: 2px solid #eee; padding-bottom: 5px; }
-        .manager-section-title.public { color: #2ecc71; }
-        
-        .manager-row { display: flex; gap: 5px; margin-bottom: 8px; align-items: center; background: #f8f9fa; padding: 8px; border-radius: 8px; border: 1px solid #ddd; }
-        .manager-row input.icon-input { width: 45px; padding: 8px; text-align: center; border: 1px solid #ccc; border-radius: 5px; font-size: 14px; }
-        .manager-row input.name-input { flex: 1; padding: 8px; border: 1px solid #ccc; border-radius: 5px; font-size: 13px; font-weight: bold; }
-        .manager-row button { padding: 8px; border: none; border-radius: 5px; cursor: pointer; font-size: 12px; }
-        .btn-updown { background: #3498db; color: white; }
-        .btn-del { background: #e74c3c; color: white; }
-        
-        .modal-actions { display: flex; gap: 10px; margin-top: 20px; }
-        .btn-save { background: #2ecc71; color: white; border: none; padding: 12px; border-radius: 8px; font-weight: bold; cursor: pointer; flex: 1; }
-        .btn-close { background: #95a5a6; color: white; border: none; padding: 12px; border-radius: 8px; font-weight: bold; cursor: pointer; flex: 1; }
-
-        .maintenance-card { background: #ffffff; padding: 35px 25px; border-radius: 20px; max-width: 450px; width: 100%; border: 2px solid #e67e22; text-align: center; margin-top: 50px; }
+        .overlay-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.7); z-index: 9999; display: flex; justify-content: center; align-items: center; padding: 20px; backdrop-filter: blur(5px); }
+        .manager-modal { background: #fff; padding: 20px; border-radius: 15px; width: 100%; max-width: 320px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); text-align: center; }
+        .btn-close { background: #95a5a6; color: white; border: none; padding: 12px; border-radius: 8px; font-weight: bold; cursor: pointer; width: 100%; margin-top: 15px; }
     </style>
 </head>
 <body>
@@ -87,45 +46,16 @@
         <a onclick="goHome()">🏠 Home</a>
         <a onclick="openProfile()">👤 Profile</a>
         <a onclick="openSupport()">📞 Support</a>
-        <a class="owner-only" id="sidebar-agent-ctrl" onclick="openAgentControl()" style="color: #f39c12;">🤖 Agent Control</a>
+        <hr style="border-color: #34495e; margin: 10px 20px;">
+        <a onclick="sharePlatformNative()" style="color: #2ecc71;">🔗 Share Platform</a>
     </div>
 
-    <div id="profile-modal-screen" class="overlay-screen" style="display: none; align-items: center;">
-        <div class="manager-modal" style="text-align: center; max-width: 320px; padding: 30px 20px;">
-            <img src="YOUR_PROFILE_IMAGE_LINK_HERE" alt="Profile Picture" style="width: 110px; height: 110px; border-radius: 50%; object-fit: cover; background: #eef2f5; border: 4px solid #3498db; margin-bottom: 15px; display: inline-block;">
-            
+    <div id="profile-modal-screen" class="overlay-screen" style="display: none;">
+        <div class="manager-modal">
+            <img src="YOUR_PROFILE_IMAGE_LINK_HERE" alt="Profile Picture" style="width: 110px; height: 110px; border-radius: 50%; object-fit: cover; background: #eef2f5; border: 4px solid #3498db; margin-bottom: 15px;">
             <h2 style="color: #2c3e50; margin-bottom: 5px;">Master AI</h2>
             <p style="font-size: 14px; color: #7f8c8d; margin-bottom: 25px; line-height: 1.5;">Official Digital Platform & Media Content Creator.</p>
-            
-            <button class="btn-close" style="width: 100%; padding: 12px;" onclick="closeProfile()">✖ Close Profile</button>
-        </div>
-    </div>
-
-    <div id="card-manager-screen" class="overlay-screen" style="display: none;">
-        <div class="manager-modal">
-            <h3>🛠️ Card Control Panel</h3>
-            <p style="font-size: 12px; color: #7f8c8d; margin-bottom: 15px;">এখানে নাম/ছবি এডিট করুন এবং ⬆️ ⬇️ দিয়ে সাজান।</p>
-            
-            <div class="manager-section-title">🔒 Private Cards</div>
-            <div id="manager-private-list"></div>
-            
-            <div class="manager-section-title public">🌐 Public Cards</div>
-            <div id="manager-public-list"></div>
-            
-            <div class="modal-actions">
-                <button class="btn-close" onclick="closeManager()">✖ Cancel</button>
-                <button class="btn-save" onclick="saveManager()">💾 Save Updates</button>
-            </div>
-        </div>
-    </div>
-
-    <div id="maintenance-screen" class="overlay-screen" style="display: none; align-items: center;">
-        <div class="maintenance-card">
-            <div style="font-size: 50px; margin-bottom: 15px;">🚀</div>
-            <h2 style="color:#2c3e50; font-weight:800;">We'll Be Back Soon!</h2>
-            <p style="color:#7f8c8d; line-height:1.6; margin-bottom:25px;">Our platform is currently undergoing scheduled maintenance.</p>
-            <div style="background: #fff3e0; color: #e67e22; padding: 10px 20px; border-radius: 30px; font-weight: bold; font-size: 14px; display: inline-block;">⚙️ Status: System Updating...</div><br>
-            <button style="margin-top: 25px; background: #34495e; color: #fff; border: none; padding: 12px 20px; border-radius: 8px; font-size: 13px; cursor: pointer; font-weight: bold;" onclick="bypassMaintenance()">🔑 Owner Login</button>
+            <button class="btn-close" onclick="closeProfile()">✖ Close Profile</button>
         </div>
     </div>
 
@@ -133,19 +63,6 @@
         <div class="header-left">
             <span class="menu-icon" onclick="openNav()">☰</span>
             <h2>Master AI</h2>
-        </div>
-        <div class="header-buttons">
-            <button class="maint-toggle owner-only" id="maint-btn" onclick="toggleMaintenanceMode()">⚙️ Update Mode: OFF</button>
-            <button class="owner-mode" id="owner-btn" onclick="toggleOwnerMode()">Owner Mode</button>
-        </div>
-    </div>
-
-    <div class="ai-box owner-only" id="master-ai-section">
-        <div class="ai-title">🤖 Master AI</div>
-        <div class="ai-message">আমি প্রস্তুত। আমাকে কমান্ড দিন।</div>
-        <div class="input-group">
-            <input type="text" id="ai-command" placeholder="যেমন: নতুন প্রজেক্ট অ্যাড করো...">
-            <button onclick="sendAgentCommand()">Send</button>
         </div>
     </div>
 
@@ -168,314 +85,79 @@
         <button class="follow-btn" id="follow-action-btn" onclick="followAction()">Follow</button>
     </div>
 
-    <div class="section-title owner-only" id="private-header">
-        <span>🔒 Private Projects (Owner)</span>
-        <button class="toggle-btn-small" id="eye-icon-btn" onclick="toggleFollowerVisibility()">🙈 Hide Quantity</button>
-    </div>
-    
-    <div class="grid-container owner-only" id="private-grid">
-        <div class="card manage-card" onclick="openManager()">
-            <div class="card-icon">🛠️</div><span class="card-title-text" style="color: #2c3e50;">MANAGE</span><br><small style="color: #e74c3c; font-weight: bold;">Edit Cards</small>
-        </div>
-        <div class="card normal-card" data-link="YOUR_LINK_HERE" onclick="handleCardClick(this)">
-            <div class="card-icon">📱</div><span class="card-title-text">APP</span><br><small style="font-weight: normal; color: #7f8c8d;">Client</small>
-        </div>
-        <div class="card normal-card" data-link="YOUR_LINK_HERE" onclick="handleCardClick(this)">
-            <div class="card-icon">🛒</div><span class="card-title-text">SHOP</span><br><small style="font-weight: normal; color: #7f8c8d;">Store</small>
-        </div>
-        <div class="card normal-card" data-link="YOUR_LINK_HERE" onclick="handleCardClick(this)">
-            <div class="card-icon">💼</div><span class="card-title-text">WEB</span><br><small style="font-weight: normal; color: #7f8c8d;">Portfolio</small>
-        </div>
-        <div class="card normal-card" data-link="YOUR_LINK_HERE" onclick="handleCardClick(this)">
-            <div class="card-icon">⚙️</div><span class="card-title-text">TOOLS</span><br><small style="font-weight: normal; color: #7f8c8d;">Admin</small>
-        </div>
-    </div>
-    
-    <button class="add-btn owner-only" id="add-priv-btn" onclick="addCard('private-grid', 'red')">+ Add New Private Project</button>
-    <button class="add-btn owner-only" id="add-pub-btn" onclick="addCard('public-grid', 'green')" style="margin-top: -5px;">+ Add New Public Project</button>
-
     <div class="section-title">🌐 Public Projects (Users)</div>
     <div class="grid-container" id="public-grid">
-        <div class="card normal-card green-top" data-link="YOUR_LINK_HERE" onclick="handleCardClick(this)">
+        <div class="card" data-link="YOUR_LINK_HERE" onclick="handleCardClick(this)">
             <div class="card-icon">📝</div><span class="card-title-text">BLOG</span><br><small style="font-weight: normal; color: #7f8c8d;">Blogs</small>
         </div>
-        <div class="card normal-card green-top" data-link="YOUR_LINK_HERE" onclick="handleCardClick(this)">
+        <div class="card" data-link="YOUR_LINK_HERE" onclick="handleCardClick(this)">
             <div class="card-icon">🎬</div><span class="card-title-text">VIDEO</span><br><small style="font-weight: normal; color: #7f8c8d;">Videos</small>
         </div>
-        <div class="card normal-card green-top" data-link="YOUR_LINK_HERE" onclick="handleCardClick(this)">
+        <div class="card" data-link="YOUR_LINK_HERE" onclick="handleCardClick(this)">
             <div class="card-icon">🎮</div><span class="card-title-text">GAME</span><br><small style="font-weight: normal; color: #7f8c8d;">Gaming</small>
         </div>
-        <div class="card normal-card green-top" data-link="YOUR_LINK_HERE" onclick="handleCardClick(this)">
+        <div class="card" data-link="YOUR_LINK_HERE" onclick="handleCardClick(this)">
             <div class="card-icon">💬</div><span class="card-title-text">CHAT</span><br><small style="font-weight: normal; color: #7f8c8d;">Public</small>
         </div>
     </div>
 
     <script>
-        // Storage Safe Wrappers
-        function getStorage(key) { try { return localStorage.getItem(key); } catch(e) { return null; } }
-        function setStorage(key, val) { try { localStorage.setItem(key, val); } catch(e) {} }
-
-        // 1. Sidebar Navigation
         function openNav() { document.getElementById("mySidebar").style.width = "250px"; }
         function closeNav() { document.getElementById("mySidebar").style.width = "0"; }
-        
-        function goHome() {
-            closeNav();
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
+        function goHome() { closeNav(); window.scrollTo({ top: 0, behavior: 'smooth' }); }
+        function openProfile() { closeNav(); document.getElementById('profile-modal-screen').style.display = 'flex'; }
+        function closeProfile() { document.getElementById('profile-modal-screen').style.display = 'none'; }
+        function openSupport() { closeNav(); alert("📞 Support Team\n\nIf you have any questions or need help, please contact our Support Team."); }
 
-        // Profile Modal
-        function openProfile() {
+        // আসল সোশ্যাল শেয়ার ও কপি লিংক অপশন
+        function sharePlatformNative() {
             closeNav();
-            document.getElementById('profile-modal-screen').style.display = 'flex';
-        }
-        function closeProfile() {
-            document.getElementById('profile-modal-screen').style.display = 'none';
-        }
-
-        // English Support Alert
-        function openSupport() {
-            closeNav();
-            alert("📞 Support Team\n\nIf you have any questions or need help, please contact our Support Team.\n(Support link is not set yet!)");
-        }
-
-        function openAgentControl() {
-            closeNav();
-            alert("🤖 Agent Control Panel: ব্যাকএন্ড এজেন্ট যুক্ত করতে এটি ব্যবহৃত হবে।");
-        }
-
-        // 2. Maintenance Mode
-        function checkMaintenanceStatus() {
-            let status = getStorage('master_ai_maintenance');
-            let screen = document.getElementById('maintenance-screen');
-            let btn = document.getElementById('maint-btn');
-            if (status === 'true') {
-                if(screen) screen.style.display = 'flex';
-                if(btn) { btn.innerText = '⚙️ Update Mode: ON'; btn.style.background = '#e74c3c'; }
+            const publicUrl = "https://masteraiplatform.com";
+            if (navigator.share) {
+                navigator.share({
+                    title: 'Master AI Platform',
+                    text: 'Explore the amazing Master AI Platform!',
+                    url: publicUrl
+                }).catch(console.error);
             } else {
-                if(screen) screen.style.display = 'none';
-                if(btn) { btn.innerText = '⚙️ Update Mode: OFF'; btn.style.background = '#e67e22'; }
+                navigator.clipboard.writeText(publicUrl);
+                alert("✅ লিংক কপি হয়েছে!\n( " + publicUrl + " )");
             }
-        }
-
-        function toggleMaintenanceMode() {
-            if(!isOwnerActive) return;
-            let status = getStorage('master_ai_maintenance');
-            setStorage('master_ai_maintenance', status === 'true' ? 'false' : 'true');
-            checkMaintenanceStatus();
-        }
-
-        function bypassMaintenance() { 
-            document.getElementById('maintenance-screen').style.display = 'none';
-            if(!isOwnerActive) toggleOwnerMode();
-        }
-
-        // 3. Owner Mode Control
-        let isOwnerActive = false;
-
-        function toggleOwnerMode() {
-            let btn = document.getElementById('owner-btn');
-            isOwnerActive = !isOwnerActive;
-            
-            let ownerElements = document.querySelectorAll('.owner-only');
-            
-            if(isOwnerActive) {
-                btn.innerText = "Owner: ON";
-                btn.style.background = "#d35400";
-                
-                ownerElements.forEach(el => {
-                    if (el.classList.contains('grid-container') || el.id === 'private-grid') {
-                        el.style.setProperty('display', 'grid', 'important');
-                    } else if (el.classList.contains('section-title') || el.classList.contains('maint-toggle')) {
-                        el.style.setProperty('display', 'flex', 'important');
-                    } else {
-                        el.style.setProperty('display', 'block', 'important');
-                    }
-                });
-            } else {
-                btn.innerText = "Owner Mode";
-                btn.style.background = "#2ecc71";
-                
-                ownerElements.forEach(el => {
-                    el.style.setProperty('display', 'none', 'important');
-                });
-            }
-            updateFollowerDisplay();
         }
 
         function handleSocialLink(url) {
-            if(!url || url === 'YOUR_LINK_HERE') {
-                alert("লিংক সেট করা হয়নি!");
-            } else {
-                window.open(url, '_blank');
-            }
+            if(!url || url === 'YOUR_LINK_HERE') { alert("লিংক সেট করা হয়নি!"); } 
+            else { window.open(url, '_blank'); }
         }
         
         function handleCardClick(card) {
             let url = card.getAttribute('data-link');
-            if(isOwnerActive) {
-                alert("অনার মোড চালু আছে। এডিট করতে '🛠️ MANAGE' কার্ডটিতে ক্লিক করুন।");
-            } else {
-                if (url && url !== 'YOUR_LINK_HERE' && url !== '#') {
-                    window.open(url, '_blank');
-                } else {
-                    alert("লিংক সেট করা হয়নি!");
-                }
-            }
+            if (url && url !== 'YOUR_LINK_HERE' && url !== '#') { window.open(url, '_blank'); } 
+            else { alert("লিংক সেট করা হয়নি!"); }
         }
 
-        // 4. Card Manager
-        function openManager() {
-            if(!isOwnerActive) return;
-            document.getElementById('card-manager-screen').style.display = 'flex';
-            populateManagerList('private-grid', 'manager-private-list');
-            populateManagerList('public-grid', 'manager-public-list');
-        }
-
-        function closeManager() { document.getElementById('card-manager-screen').style.display = 'none'; }
-
-        function populateManagerList(gridId, listId) {
-            let grid = document.getElementById(gridId);
-            let list = document.getElementById(listId);
-            list.innerHTML = ''; 
-            
-            let cards = grid.querySelectorAll('.normal-card');
-            cards.forEach((card) => {
-                let icon = card.querySelector('.card-icon') ? card.querySelector('.card-icon').innerText : '✨';
-                let title = card.querySelector('.card-title-text') ? card.querySelector('.card-title-text').innerText : 'PROJECT';
-                let subtitle = card.querySelector('small') ? card.querySelector('small').innerText : '';
-                
-                let row = document.createElement('div');
-                row.className = 'manager-row';
-                row.innerHTML = `
-                    <input type="text" class="icon-input" value="${icon}">
-                    <input type="text" class="name-input" value="${title}">
-                    <input type="hidden" class="sub-input" value="${subtitle}">
-                    <button class="btn-updown" onclick="moveRow(this, -1)">⬆️</button>
-                    <button class="btn-updown" onclick="moveRow(this, 1)">⬇️</button>
-                    <button class="btn-del" onclick="deleteRow(this)">🗑️</button>
-                `;
-                list.appendChild(row);
-            });
-        }
-
-        function moveRow(btn, direction) {
-            let row = btn.parentElement;
-            let list = row.parentElement;
-            if (direction === -1 && row.previousElementSibling) list.insertBefore(row, row.previousElementSibling);
-            else if (direction === 1 && row.nextElementSibling) list.insertBefore(row.nextElementSibling, row);
-        }
-
-        function deleteRow(btn) { if(confirm("কার্ডটি ডিলিট করতে চান?")) btn.parentElement.remove(); }
-
-        function saveManager() {
-            updateGridFromList('manager-private-list', 'private-grid', '');
-            updateGridFromList('manager-public-list', 'public-grid', 'green-top');
-            closeManager();
-            alert("✅ সমস্ত পরিবর্তন সফলভাবে সেভ হয়েছে!");
-        }
-
-        function updateGridFromList(listId, gridId, extraClass) {
-            let list = document.getElementById(listId);
-            let grid = document.getElementById(gridId);
-            let oldCards = grid.querySelectorAll('.normal-card');
-            oldCards.forEach(c => c.remove());
-            
-            let rows = list.querySelectorAll('.manager-row');
-            rows.forEach(row => {
-                let icon = row.querySelector('.icon-input').value;
-                let title = row.querySelector('.name-input').value.toUpperCase();
-                let subtitle = row.querySelector('.sub-input').value;
-                
-                let newCard = document.createElement('div');
-                newCard.className = `card normal-card ${extraClass}`;
-                newCard.setAttribute('data-link', 'YOUR_LINK_HERE');
-                newCard.setAttribute('onclick', 'handleCardClick(this)');
-                newCard.innerHTML = `<div class="card-icon">${icon}</div><span class="card-title-text">${title}</span><br><small style="font-weight: normal; color: #7f8c8d;">${subtitle}</small>`;
-                grid.appendChild(newCard);
-            });
-        }
-
-        function addCard(gridId, colorType) {
-            if(!isOwnerActive) return;
-            let grid = document.getElementById(gridId);
-            let title = prompt("নতুন প্রজেক্টের নাম দিন:", "NEW PROJECT");
-            if (!title) return;
-            
-            let extraClass = colorType === 'green' ? 'green-top' : '';
-            let newCard = document.createElement('div');
-            newCard.className = `card normal-card ${extraClass}`;
-            newCard.setAttribute('data-link', 'YOUR_LINK_HERE');
-            newCard.setAttribute('onclick', 'handleCardClick(this)');
-            newCard.innerHTML = `<div class="card-icon">✨</div><span class="card-title-text">${title.toUpperCase()}</span><br><small style="font-weight: normal; color: #7f8c8d;">New</small>`;
-            grid.appendChild(newCard);
-        }
-
-        // 5. Followers Logic (Only hiding quantity)
-        let currentFollowers = 0; 
-        let isFollowersHidden = false; 
-        let isFollowing = false;
-
-        function toggleFollowerVisibility() {
-            if(!isOwnerActive) return;
-            isFollowersHidden = !isFollowersHidden;
-            let btn = document.getElementById('eye-icon-btn');
-            
-            if(isFollowersHidden) {
-                if(btn) { btn.innerText = "👁️ Show Quantity"; btn.style.background = "#e74c3c"; btn.style.color = "white"; }
-            } else {
-                if(btn) { btn.innerText = "🙈 Hide Quantity"; btn.style.background = "#bdc3c7"; btn.style.color = "#333"; }
-            }
-            updateFollowerDisplay();
-        }
-
-        function updateFollowerDisplay() {
-            let countText = document.getElementById('follower-count-text');
-            
-            if (isFollowersHidden && !isOwnerActive) {
-                // If hidden and public view: Show only text, hide number
-                if(countText) countText.innerText = "Followers";
-            } else {
-                // If owner is active OR not hidden: Show full quantity
-                if(countText) countText.innerText = currentFollowers + " Followers";
-            }
-        }
-        
-        function followAction() {
-            let btn = document.getElementById('follow-action-btn');
-            if(!isFollowing) {
-                isFollowing = true;
-                currentFollowers++;
-                if(btn) { btn.innerText = "Following"; btn.style.background = "#2ecc71"; }
-            } else {
-                isFollowing = false;
-                currentFollowers--;
-                if(btn) { btn.innerText = "Follow"; btn.style.background = "#0984e3"; }
-            }
-            updateFollowerDisplay();
-        }
-
-        // 6. Search & Command
         function filterCards() {
             let input = document.getElementById('main-search').value.toUpperCase();
-            let cards = document.querySelectorAll('.normal-card');
-            cards.forEach(c => {
-                c.style.display = c.innerText.toUpperCase().indexOf(input) > -1 ? "" : "none";
-            });
+            let cards = document.querySelectorAll('.card');
+            cards.forEach(c => { c.style.display = c.innerText.toUpperCase().indexOf(input) > -1 ? "" : "none"; });
         }
 
-        function sendAgentCommand() {
-            let input = document.getElementById('ai-command');
-            let cmd = input ? input.value : '';
-            if(!cmd.trim()) return alert("দয়া করে একটি কমান্ড লিখুন!");
-            alert("আপনার কমান্ড: '" + cmd + "' রিসিভ হয়েছে।");
-            if(input) input.value = "";
-        }
+        let currentFollowers = 0; 
+        let isFollowing = false;
 
-        window.onload = function() {
-            checkMaintenanceStatus();
-            updateFollowerDisplay();
-        };
+        function followAction() {
+            let btn = document.getElementById('follow-action-btn');
+            let countText = document.getElementById('follower-count-text');
+            if(!isFollowing) {
+                isFollowing = true; currentFollowers++;
+                btn.innerText = "Following"; btn.style.background = "#2ecc71";
+            } else {
+                isFollowing = false; currentFollowers--;
+                btn.innerText = "Follow"; btn.style.background = "#0984e3";
+            }
+            countText.innerText = currentFollowers + " Followers";
+        }
     </script>
 </body>
 </html>
+ 
