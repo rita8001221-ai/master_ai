@@ -1,4 +1,4 @@
- <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="bn">
 <head>
     <meta charset="UTF-8">
@@ -85,8 +85,33 @@
         <button class="closebtn" onclick="closeNav()">×</button>
         <a onclick="goHome()">🏠 Home</a>
         <a onclick="openProfile()">👤 Profile</a>
+        <a onclick="openShareOptions()">📤 Share Platform</a>
         <a onclick="openSupport()">📞 Support</a>
         <a class="owner-only" id="sidebar-agent-ctrl" onclick="openAgentControl()" style="color: #f39c12;">🤖 Agent Control</a>
+        <a class="owner-only" id="sidebar-export-ctrl" onclick="fullExport()" style="color: #2ecc71;">💾 Full Export</a>
+    </div>
+
+    <!-- Share Modal -->
+    <div id="share-modal-screen" class="overlay-screen" style="display: none; align-items: center;">
+        <div class="manager-modal" style="text-align: center; max-width: 320px; padding: 25px 20px;">
+            <h3 style="color: #2c3e50; margin-bottom: 20px;">Share Platform</h3>
+            
+            <button class="btn-save" style="width: 100%; margin-bottom: 12px; background: #34495e; display: flex; align-items: center; justify-content: center; gap: 8px;" onclick="copyLink()">
+                📋 Copy Link
+            </button>
+            <button class="btn-save" style="width: 100%; margin-bottom: 20px; background: #8e44ad; display: flex; align-items: center; justify-content: center; gap: 8px;" onclick="nativeShare()">
+                📤 Share from this phone
+            </button>
+            
+            <div style="font-size: 13px; font-weight: bold; color: #7f8c8d; margin-bottom: 10px;">Direct Share</div>
+            <div class="social-buttons" style="justify-content: center; gap: 10px; margin-bottom: 20px;">
+                <button class="btn-whatsapp" onclick="fallbackShare('whatsapp')">WhatsApp</button>
+                <button class="btn-telegram" onclick="fallbackShare('telegram')">Telegram</button>
+                <button class="btn-facebook" onclick="fallbackShare('facebook')">Facebook</button>
+            </div>
+            
+            <button class="btn-close" style="width: 100%; padding: 12px;" onclick="closeShareOptions()">✖ Cancel</button>
+        </div>
     </div>
 
     <div id="profile-modal-screen" class="overlay-screen" style="display: none; align-items: center;">
@@ -230,6 +255,81 @@
         }
         function closeProfile() {
             document.getElementById('profile-modal-screen').style.display = 'none';
+        }
+
+        // New Feature: Share Platform Options
+        function openShareOptions() {
+            closeNav();
+            document.getElementById('share-modal-screen').style.display = 'flex';
+        }
+
+        function closeShareOptions() {
+            document.getElementById('share-modal-screen').style.display = 'none';
+        }
+
+        function copyLink() {
+            let currentUrl = window.location.href;
+            navigator.clipboard.writeText(currentUrl).then(() => {
+                alert("✅ Link copied to clipboard!");
+            }).catch(err => {
+                alert("❌ Failed to copy link.");
+            });
+        }
+
+        function nativeShare() {
+            let currentUrl = window.location.href;
+            if (navigator.share) {
+                navigator.share({
+                    title: 'Master AI Platform',
+                    text: 'Check out this awesome platform!',
+                    url: currentUrl
+                }).catch(err => console.log('Error sharing:', err));
+            } else {
+                alert("❌ Native sharing is not supported on this browser/device. Please use copy link or direct share.");
+            }
+        }
+
+        function fallbackShare(platform) {
+            let url = encodeURIComponent(window.location.href);
+            let text = encodeURIComponent("Check out Master AI Platform: ");
+            let shareUrl = "";
+            
+            if (platform === 'whatsapp') shareUrl = `https://api.whatsapp.com/send?text=${text}${url}`;
+            else if (platform === 'telegram') shareUrl = `https://t.me/share/url?url=${url}&text=${text}`;
+            else if (platform === 'facebook') shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${url}`;
+            
+            if (shareUrl) window.open(shareUrl, '_blank');
+        }
+
+        // New Feature: Full Export (Owner Only)
+        function fullExport() {
+            // সিকিউরিটি চেক: শুধু Owner Mode-এ কাজ করবে
+            if (!isOwnerActive) {
+                console.error("Unauthorized Access Blocked.");
+                return;
+            }
+            
+            let confirmExport = confirm("আপনি কি সম্পূর্ণ প্ল্যাটফর্মের একটি ব্যাকআপ (Full Export) ডাউনলোড করতে চান?");
+            if (!confirmExport) return;
+
+            let exportData = {
+                timestamp: new Date().toISOString(),
+                privateCards: document.getElementById('private-grid').innerHTML,
+                publicCards: document.getElementById('public-grid').innerHTML,
+                followers: currentFollowers,
+                maintenanceMode: getStorage('master_ai_maintenance')
+            };
+
+            let dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(exportData, null, 2));
+            let downloadAnchorNode = document.createElement('a');
+            downloadAnchorNode.setAttribute("href", dataStr);
+            downloadAnchorNode.setAttribute("download", "master_ai_full_backup.json");
+            document.body.appendChild(downloadAnchorNode); 
+            downloadAnchorNode.click();
+            downloadAnchorNode.remove();
+            
+            alert("✅ Full Platform Backup Successfully Exported!");
+            closeNav();
         }
 
         // English Support Alert
