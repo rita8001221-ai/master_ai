@@ -74,7 +74,7 @@
         <button class="closebtn" onclick="closeNav()">×</button>
         <a onclick="goHome()">🏠 Home</a>
         <a onclick="openProfile()">👤 Edit Profile</a>
-        <a onclick="openShareOptions()">📤 Share Platform</a>
+        <a onclick="openShareOptions()">📤 Share Public Platform</a>
         <a onclick="openSupport()">📞 Support</a>
         <a id="sidebar-agent-ctrl" onclick="openAgentControl()" style="color: #f39c12;">🤖 Agent Control</a>
         <a id="sidebar-export-ctrl" onclick="fullExport()" style="color: #2ecc71;">💾 Full Export</a>
@@ -83,8 +83,9 @@
     <!-- Share Modal -->
     <div id="share-modal-screen" class="overlay-screen" style="display: none; align-items: center;">
         <div class="manager-modal" style="text-align: center; max-width: 320px; padding: 25px 20px;">
-            <h3 style="color: #2c3e50; margin-bottom: 20px;">Share Platform</h3>
-            <button class="btn-save" style="width: 100%; margin-bottom: 12px; background: #34495e;" onclick="copyLink()">📋 Copy Link</button>
+            <h3 style="color: #2c3e50; margin-bottom: 10px;">Share Platform</h3>
+            <p style="font-size: 12px; color: #7f8c8d; margin-bottom: 20px;">এটি শুধুমাত্র পাবলিক প্যানেলের লিংক শেয়ার করবে।</p>
+            <button class="btn-save" style="width: 100%; margin-bottom: 12px; background: #34495e;" onclick="copyLink()">📋 Copy Public Link</button>
             <button class="btn-close" style="width: 100%; padding: 12px;" onclick="closeShareOptions()">✖ Cancel</button>
         </div>
     </div>
@@ -174,6 +175,10 @@
     </div>
 
     <script>
+        // ======= আপনার পাবলিক প্যানেলের লিংকটি এখানে বসানো হলো =======
+        const PUBLIC_PANEL_LINK = "https://rita8001221-ai.github.io/Master-AI-platform/"; 
+        // ==========================================================
+
         function openNav() { document.getElementById("mySidebar").style.width = "250px"; }
         function closeNav() { document.getElementById("mySidebar").style.width = "0"; }
         function goHome() { closeNav(); window.scrollTo({ top: 0, behavior: 'smooth' }); }
@@ -215,7 +220,11 @@
 
         function openShareOptions() { closeNav(); document.getElementById('share-modal-screen').style.display = 'flex'; }
         function closeShareOptions() { document.getElementById('share-modal-screen').style.display = 'none'; }
-        function copyLink() { navigator.clipboard.writeText(window.location.href).then(() => alert("✅ Link copied!")); }
+        
+        // Share button now uses the PUBLIC_PANEL_LINK instead of current URL
+        function copyLink() { 
+            navigator.clipboard.writeText(PUBLIC_PANEL_LINK).then(() => alert("✅ Public Platform Link copied!")); 
+        }
 
         function openManager() {
             document.getElementById('card-manager-screen').style.display = 'flex';
