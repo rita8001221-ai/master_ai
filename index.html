@@ -556,5 +556,22 @@
             if(savedDesc) document.getElementById('display-prof-desc').innerText = savedDesc;
         };
     </script>
+    <!-- Firebase Connection Script -->
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyB6uh1YVCTvqC_m8Tadc58RWd6nZ_5X1tA",
+      authDomain: "master-ai-platform-f0115.firebaseapp.com",
+      projectId: "master-ai-platform-f0115",
+      storageBucket: "master-ai-platform-f0115.firebasestorage.app",
+      messagingSenderId: "293198308336",
+      appId: "1:293198308336:web:bf42e192c304cbd251b335"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    console.log("Welcome Boss! Firebase is connected successfully.");
+</script>
+
 </body>
 </html>
