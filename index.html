@@ -572,18 +572,131 @@
     const app = initializeApp(firebaseConfig);
     console.log("Welcome Boss! Firebase is connected successfully.");
 </script>
-    <!-- Master AI Voice Agent System -->
-<button id="agent-voice-btn" style="position: fixed; bottom: 20px; right: 20px; background: #38bdf8; color: #fff; border: none; border-radius: 50%; width: 60px; height: 60px; font-size: 24px; box-shadow: 0 4px 10px rgba(0,0,0,0.5); z-index: 1000; cursor: pointer;">
-    🔊
-</button>
+    <!-- Master AI Smart Chat Widget (Owner Only) -->
+<style>
+    #ai-chat-widget {
+        position: fixed; bottom: 20px; right: 20px; width: 350px; 
+        background: #1e293b; border: 2px solid #38bdf8; border-radius: 15px; 
+        box-shadow: 0 10px 25px rgba(0,0,0,0.5); display: flex; flex-direction: column; 
+        z-index: 9999; font-family: sans-serif; overflow: hidden;
+    }
+    #chat-header {
+        background: #38bdf8; color: #fff; padding: 15px; font-weight: bold; 
+        display: flex; justify-content: space-between; align-items: center;
+    }
+    #chat-body {
+        height: 300px; overflow-y: auto; padding: 15px; display: flex; flex-direction: column; gap: 10px;
+    }
+    .msg { padding: 10px; border-radius: 10px; max-width: 85%; font-size: 14px; line-height: 1.5; }
+    .msg.user { background: #334155; color: white; align-self: flex-end; border: 1px solid #475569;}
+    .msg.agent { background: #0ea5e9; color: white; align-self: flex-start; }
+    .speaker-icon { cursor: pointer; font-size: 16px; margin-left: 8px; background: #0284c7; padding: 2px 6px; border-radius: 50%; }
+    #chat-footer {
+        display: flex; padding: 10px; background: #0f172a; gap: 8px; border-top: 1px solid #334155;
+    }
+    #chat-input {
+        flex: 1; padding: 10px; border-radius: 20px; border: none; outline: none; background: #334155; color: white;
+    }
+    .action-btn {
+        background: #38bdf8; border: none; border-radius: 50%; width: 40px; height: 40px; color: white; cursor: pointer; font-size: 16px;
+    }
+    .stop-btn { background: #ef4444; font-size: 12px; padding: 4px 8px; border-radius: 5px; cursor: pointer; border: none; color: white;}
+</style>
+
+<div id="ai-chat-widget">
+    <div id="chat-header">
+        <span>🤖 ডেভেলপার এজেন্ট</span>
+        <button class="stop-btn" onclick="stopSpeaking()">🛑 চুপ</button>
+    </div>
+    <div id="chat-body" id="chat-body">
+        <div class="msg agent">হ্যালো মহব্বত মাস্টার বস! আমি আপনার স্মার্ট ডেভেলপার এজেন্ট। আমি রেডি! <span class="speaker-icon" title="শুনুন" onclick="speakText('হ্যালো মহব্বত মাস্টার বস! আমি আপনার স্মার্ট ডেভেলপার এজেন্ট। আমি রেডি!')">🔊</span></div>
+    </div>
+    <div id="chat-footer">
+        <button class="action-btn" id="mic-btn" title="ভয়েস কমান্ড">🎤</button>
+        <input type="text" id="chat-input" placeholder="বস, কমান্ড দিন...">
+        <button class="action-btn" id="send-btn">➤</button>
+    </div>
+</div>
 
 <script>
-    document.getElementById('agent-voice-btn').addEventListener('click', function() {
-        let msg = new SpeechSynthesisUtterance("হ্যালো বস! আমি আপনার মাস্টার এআই ডেভেলপার এজেন্ট। আপনার প্ল্যাটফর্মের ডেটাবেস ১০০ পার্সেন্ট সুরক্ষিত এবং রেডি। আমাকে কী করতে হবে বলুন?");
-        msg.lang = 'bn-IN'; // বাংলা ভয়েস 
-        msg.rate = 0.9; // কথা বলার স্পিড
-        msg.pitch = 1.0;
+    const chatBody = document.getElementById('chat-body');
+    const chatInput = document.getElementById('chat-input');
+    const sendBtn = document.getElementById('send-btn');
+    const micBtn = document.getElementById('mic-btn');
+
+    function appendMessage(sender, text) {
+        let div = document.createElement('div');
+        div.className = 'msg ' + sender;
+        if(sender === 'agent') {
+            div.innerHTML = text + ` <span class="speaker-icon" onclick="speakText('${text}')">🔊</span>`;
+        } else {
+            div.innerText = text;
+        }
+        chatBody.appendChild(div);
+        chatBody.scrollTop = chatBody.scrollHeight;
+    }
+
+    function speakText(text) {
+        window.speechSynthesis.cancel(); // আগের কথা থামাচ্ছে
+        let msg = new SpeechSynthesisUtterance(text);
+        msg.lang = 'bn-IN';
+        msg.rate = 0.9;
         window.speechSynthesis.speak(msg);
+    }
+
+    window.stopSpeaking = function() {
+        window.speechSynthesis.cancel(); // সাথে সাথে চুপ!
+    }
+
+    function handleCommand(cmd) {
+        cmd = cmd.trim();
+        if(!cmd) return;
+        
+        appendMessage('user', cmd);
+        chatInput.value = '';
+
+        // 🛑 চুপ করার লজিক
+        if(cmd.includes("চুপ") || cmd.includes("স্টপ") || cmd.includes("stop") || cmd.includes("থামো")) {
+            stopSpeaking();
+            appendMessage('agent', "জি বস, আমি চুপ হয়ে গেলাম।");
+            return;
+        }
+
+        // 🤖 এজেন্টের স্মার্ট রিপ্লাই
+        setTimeout(() => {
+            let reply = "মহব্বত মাস্টার বস, আপনার নির্দেশ পেয়েছি। আমরা খুব শীঘ্রই এই প্ল্যাটফর্মে মাল্টিপল এআই ফিচার (ChatGPT/Gemini) কানেক্ট করব। এখন আর কী মডিফাই করব বলুন?";
+            appendMessage('agent', reply);
+            speakText(reply); // নিজে থেকেই পড়ে শোনাবে
+        }, 1000);
+    }
+
+    sendBtn.onclick = () => handleCommand(chatInput.value);
+    chatInput.onkeypress = (e) => { if(e.key === 'Enter') handleCommand(chatInput.value); };
+
+    // 🎤 Voice Recognition (মাইক দিয়ে কথা বলার সিস্টেম)
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if(SpeechRecognition) {
+        const recognition = new SpeechRecognition();
+        recognition.lang = 'bn-IN';
+        micBtn.onclick = () => {
+            micBtn.style.background = "#ef4444"; // রেকর্ড হচ্ছে বোঝাতে লাল হবে
+            recognition.start();
+        };
+        recognition.onresult = (event) => {
+            micBtn.style.background = "#38bdf8"; // আবার নীল হবে
+            const transcript = event.results[0][0].transcript;
+            chatInput.value = transcript;
+            handleCommand(transcript);
+        };
+        recognition.onerror = () => {
+            micBtn.style.background = "#38bdf8";
+        }
+    } else {
+        micBtn.style.display = 'none'; // ব্রাউজার সাপোর্ট না করলে মাইক হাইড হবে
+    }
+</script>
+
+        
     });
 </script>
 
