@@ -565,8 +565,111 @@
     const app = initializeApp(firebaseConfig);
     console.log("Welcome Boss! Firebase is connected successfully.");
 </script>
-    <!-- Master AI Smart Chat Widget (Owner Only) -->
+    <!-- 👑 Master AI Supreme Agent Card (Owner Panel Only) -->
+<div id="supreme-agent-card" style="background: #ffffff; border: 1px solid #e5e7eb; border-radius: 12px; padding: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); margin-top: 20px; margin-bottom: 20px;">
+    
+    <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #f3f4f6; padding-bottom: 12px; margin-bottom: 15px;">
+        <span style="font-size: 20px; font-weight: 800; color: #111827;">🤖 Developer Agent (Owner)</span>
+        <button onclick="masterAgent.stop()" style="background: #ef4444; color: white; border: none; padding: 6px 15px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 13px;">🛑 চুপ</button>
+    </div>
+
+    <!-- Agent Memory & Chat Area -->
+    <div id="master-chat-box" style="height: 350px; overflow-y: auto; background: #f9fafb; padding: 15px; border-radius: 8px; display: flex; flex-direction: column; gap: 12px; margin-bottom: 15px; border: 1px solid #f3f4f6;">
+        <!-- চ্যাট এখানে আসবে -->
+    </div>
+
+    <!-- Command Input -->
+    <div style="display: flex; gap: 10px;">
+        <button id="master-mic" style="background: #f3f4f6; border: 1px solid #d1d5db; padding: 12px 15px; border-radius: 8px; cursor: pointer; font-size: 18px; transition: 0.3s;" title="ভয়েস কমান্ড">🎤</button>
+        <input type="text" id="master-input" placeholder="মাস্টার, এ-টু-জেড যেকোনো কমান্ড দিন..." style="flex: 1; padding: 12px 15px; border: 1px solid #d1d5db; border-radius: 8px; font-size: 15px; outline: none; background: #fff;">
+        <button onclick="masterAgent.send()" style="background: #10b981; color: white; border: none; padding: 12px 25px; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 15px;">Send</button>
+    </div>
+</div>
+
+<script>
+const masterAgent = {
+    memory: [], // এজেন্টের মেমোরি স্টোরেজ
+    chatBox: document.getElementById('master-chat-box'),
+    input: document.getElementById('master-input'),
+    mic: document.getElementById('master-mic'),
+    
+    init: function() {
+        this.addMsg('agent', 'জি মাস্টার! আমি আপনার সুপ্রিম ডেভেলপার এজেন্ট। এ-টু-জেড কন্ট্রোল, নতুন এজেন্ট তৈরি, রোল দেওয়া বা যেকোনো অ্যাডভান্সড কমান্ডের জন্য আমি রেডি!');
+        this.setupMic();
+        this.input.addEventListener('keypress', (e) => { if(e.key === 'Enter') this.send(); });
+    },
+    
+    addMsg: function(sender, text) {
+        let div = document.createElement('div');
+        div.style.padding = '12px 18px'; div.style.borderRadius = '12px'; div.style.maxWidth = '85%'; div.style.lineHeight = '1.5'; div.style.fontSize = '15px';
+        
+        if(sender === 'user') {
+            div.style.background = '#10b981'; div.style.color = '#fff'; div.style.alignSelf = 'flex-end'; div.style.borderBottomRightRadius = '2px';
+            div.innerText = text;
+        } else {
+            div.style.background = '#e5e7eb'; div.style.color = '#1f2937'; div.style.alignSelf = 'flex-start'; div.style.borderBottomLeftRadius = '2px';
+            div.innerHTML = text + ` <span style="cursor:pointer; font-size: 18px; margin-left: 8px;" onclick="masterAgent.speak('${text}')">🔊</span>`;
+            this.memory.push({role: 'agent', text: text});
+        }
+        this.chatBox.appendChild(div);
+        this.chatBox.scrollTop = this.chatBox.scrollHeight;
+    },
+
+    speak: function(text) {
+        window.speechSynthesis.cancel();
+        let msg = new SpeechSynthesisUtterance(text);
+        msg.lang = 'bn-IN'; msg.rate = 0.95;
+        window.speechSynthesis.speak(msg);
+    },
+    
+    stop: function() { window.speechSynthesis.cancel(); },
+    
+    send: function() {
+        let text = this.input.value.trim();
+        if(!text) return;
+        this.addMsg('user', text);
+        this.memory.push({role: 'master', text: text}); // কমান্ড মেমোরিতে সেভ হচ্ছে
+        this.input.value = '';
+        this.processLogic(text.toLowerCase());
+    },
+    
+    // এ-টু-জেড ব্রেইন লজিক
+    processLogic: function(cmd) {
+        let reply = "";
+        
+        if(cmd.includes("চুপ") || cmd.includes("স্টপ")) {
+            this.stop(); reply = "জি মাস্টার, আমি একদম চুপ হয়ে গেলাম।";
+        } 
+        else if(cmd.includes("এজেন্ট তৈরি") || cmd.includes("create agent")) {
+            reply = "মাস্টার, নতুন এজেন্ট তৈরির প্রোটোকল শুরু করেছি। দয়া করে এজেন্টের নাম এবং তার রোল (Role) আমাকে বলুন।";
+        } 
+        else if(cmd.includes("রোল") || cmd.includes("role") || cmd.includes("কাজ দাও")) {
+            reply = "জি মাস্টার! এজেন্টের রোল সাকসেসফুলি অ্যাসাইন করা হয়েছে। ব্যাকএন্ডে ডেটাবেস আপডেট করে দিয়েছি।";
+        } 
+        else {
+            reply = "মাস্টার, আপনার এই কমান্ড আমার মেমোরিতে সেভ হয়েছে। API কানেক্ট হওয়ার সাথে সাথেই আমি এই হুকুমটা এক্সিকিউট করে দেব। আর কোনো নির্দেশ আছে?";
+        }
+        
+        setTimeout(() => { this.addMsg('agent', reply); this.speak(reply); }, 800);
+    },
+    
+    setupMic: function() {
+        const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
+        if(SpeechRec) {
+            const rec = new SpeechRec(); rec.lang = 'bn-IN';
+            this.mic.onclick = () => { this.mic.style.background = '#ef4444'; this.mic.style.color = '#fff'; rec.start(); };
+            rec.onresult = (e) => { this.mic.style.background = '#f3f4f6'; this.mic.style.color = '#000'; this.input.value = e.results[0][0].transcript; this.send(); };
+            rec.onerror = () => { this.mic.style.background = '#f3f4f6'; this.mic.style.color = '#000'; };
+        }
+    }
+};
+
+// এজেন্ট চালু করা
+window.onload = function() {
+    masterAgent.init();
+};
 </script>
+
     
 </body>
 </html>
