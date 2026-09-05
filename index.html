@@ -572,6 +572,21 @@
     const app = initializeApp(firebaseConfig);
     console.log("Welcome Boss! Firebase is connected successfully.");
 </script>
+    <!-- Master AI Voice Agent System -->
+<button id="agent-voice-btn" style="position: fixed; bottom: 20px; right: 20px; background: #38bdf8; color: #fff; border: none; border-radius: 50%; width: 60px; height: 60px; font-size: 24px; box-shadow: 0 4px 10px rgba(0,0,0,0.5); z-index: 1000; cursor: pointer;">
+    🔊
+</button>
+
+<script>
+    document.getElementById('agent-voice-btn').addEventListener('click', function() {
+        let msg = new SpeechSynthesisUtterance("হ্যালো বস! আমি আপনার মাস্টার এআই ডেভেলপার এজেন্ট। আপনার প্ল্যাটফর্মের ডেটাবেস ১০০ পার্সেন্ট সুরক্ষিত এবং রেডি। আমাকে কী করতে হবে বলুন?");
+        msg.lang = 'bn-IN'; // বাংলা ভয়েস 
+        msg.rate = 0.9; // কথা বলার স্পিড
+        msg.pitch = 1.0;
+        window.speechSynthesis.speak(msg);
+    });
+</script>
+
 
 </body>
 </html>
