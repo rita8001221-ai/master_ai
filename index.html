@@ -566,77 +566,7 @@
     console.log("Welcome Boss! Firebase is connected successfully.");
 </script>
     <!-- Master AI Smart Chat Widget (Owner Only) -->
-
-        let div = document.createElement('div');
-        div.className = 'msg ' + sender;
-        if(sender === 'agent') {
-            div.innerHTML = text + ` <span class="speaker-icon" onclick="speakText('${text}')">🔊</span>`;
-        } else {
-            div.innerText = text;
-        }
-        chatBody.appendChild(div);
-        chatBody.scrollTop = chatBody.scrollHeight;
-    }
-
-    function speakText(text) {
-        window.speechSynthesis.cancel(); // আগের কথা থামাচ্ছে
-        let msg = new SpeechSynthesisUtterance(text);
-        msg.lang = 'bn-IN';
-        msg.rate = 0.9;
-        window.speechSynthesis.speak(msg);
-    }
-
-    window.stopSpeaking = function() {
-        window.speechSynthesis.cancel(); // সাথে সাথে চুপ!
-    }
-
-    function handleCommand(cmd) {
-        cmd = cmd.trim();
-        if(!cmd) return;
-        
-        appendMessage('user', cmd);
-        chatInput.value = '';
-
-        // 🛑 চুপ করার লজিক
-        if(cmd.includes("চুপ") || cmd.includes("স্টপ") || cmd.includes("stop") || cmd.includes("থামো")) {
-            stopSpeaking();
-            appendMessage('agent', "জি বস, আমি চুপ হয়ে গেলাম।");
-            return;
-        }
-
-        // 🤖 এজেন্টের স্মার্ট রিপ্লাই
-        setTimeout(() => {
-            let reply = "মহব্বত মাস্টার বস, আপনার নির্দেশ পেয়েছি। আমরা খুব শীঘ্রই এই প্ল্যাটফর্মে মাল্টিপল এআই ফিচার (ChatGPT/Gemini) কানেক্ট করব। এখন আর কী মডিফাই করব বলুন?";
-            appendMessage('agent', reply);
-            speakText(reply); // নিজে থেকেই পড়ে শোনাবে
-        }, 1000);
-    }
-
-    sendBtn.onclick = () => handleCommand(chatInput.value);
-    chatInput.onkeypress = (e) => { if(e.key === 'Enter') handleCommand(chatInput.value); };
-
-    // 🎤 Voice Recognition (মাইক দিয়ে কথা বলার সিস্টেম)
-    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-    if(SpeechRecognition) {
-        const recognition = new SpeechRecognition();
-        recognition.lang = 'bn-IN';
-        micBtn.onclick = () => {
-            micBtn.style.background = "#ef4444"; // রেকর্ড হচ্ছে বোঝাতে লাল হবে
-            recognition.start();
-        };
-        recognition.onresult = (event) => {
-            micBtn.style.background = "#38bdf8"; // আবার নীল হবে
-            const transcript = event.results[0][0].transcript;
-            chatInput.value = transcript;
-            handleCommand(transcript);
-        };
-        recognition.onerror = () => {
-            micBtn.style.background = "#38bdf8";
-        }
-    } else {
-        micBtn.style.display = 'none'; // ব্রাউজার সাপোর্ট না করলে মাইক হাইড হবে
-    }
 </script>
-
+    
 </body>
 </html>
