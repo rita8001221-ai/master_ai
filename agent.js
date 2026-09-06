@@ -5,12 +5,17 @@ const masterAgent = {
     previewBox: document.getElementById('file-preview-box'),
     fileNameText: document.getElementById('file-name-text'),
     
+    // আপনার অরিজিনাল জেমিনি কি (Key)
+    apiKeys: [
+        "AQ.Ab8RN6I52M16r9VJyh1qoGL0LS_p2y_3k8YGemxBzjoIYmAduA", 
+    ],
+    
     uploadedFileBase64: null,
     uploadedFileMime: null,
-    isLiveMode: false, // লাইভ কথা বলার জন্য
+    isLiveMode: false,
 
     init: function() {
-        this.appendMsg('agent', 'জি মাস্টার! অনলাইন সুপার-ব্রেইন এবং লাইভ ভয়েস সিস্টেম অ্যাক্টিভ। মাইকে একবার ক্লিক করে কথা শুরু করুন!');
+        this.appendMsg('agent', 'জি মাস্টার! আপনার অরিজিনাল জেমিনি ব্রেইন এবং অটোমেটিক ব্যাকআপ সিস্টেম ১০০% অ্যাক্টিভ। আমি রেডি!');
         this.setupMic();
         this.inputField.addEventListener('keypress', (e) => { if (e.key === 'Enter') this.send(); });
     },
@@ -68,12 +73,9 @@ const masterAgent = {
         msg.lang = 'bn-IN'; 
         msg.rate = 0.95;
         
-        // কথা বলা শেষ হলে অটোমেটিক আবার মাইক অন করবে (লাইভ কল ফিচার)
         msg.onend = () => {
             if(this.isLiveMode) {
-                setTimeout(() => {
-                    this.micBtn.click();
-                }, 800); // উত্তর দেওয়ার পর একটু থেমে আবার মাইক অন হবে
+                setTimeout(() => { this.micBtn.click(); }, 800); 
             }
         };
         window.speechSynthesis.speak(msg);
@@ -96,7 +98,7 @@ const masterAgent = {
         
         this.inputField.value = '';
 
-        if(text.toLowerCase().includes("চুপ") || text.toLowerCase().includes("স্টপ") || text.toLowerCase().includes("থামো")) {
+        if(text.toLowerCase().includes("চুপ") || text.toLowerCase().includes("স্টপ")) {
             this.stop(); 
             this.appendMsg('agent', "জি মাস্টার, আমি লাইভ মোড অফ করে চুপ হয়ে গেলাম।"); 
             this.removeFile(); 
@@ -111,37 +113,61 @@ const masterAgent = {
         this.historyDiv.scrollTop = this.historyDiv.scrollHeight;
 
         try {
-            // ফ্রি অনলাইন ব্রেইন (Pollinations AI)
-            let promptText = text;
-            if (hasFile) promptText += ` (Context file: ${fileName})`;
+            // ১. জেমিনি (Gemini) ব্রেইন দিয়ে ট্রাই
+            let contentsArray = [{ parts: [] }];
+            if(text) contentsArray[0].parts.push({ text: text });
+            if(hasFile) contentsArray[0].parts.push({ inlineData: { mimeType: this.uploadedFileMime, data: this.uploadedFileBase64 } });
 
-            const res = await fetch(`https://text.pollinations.ai/openai`, {
+            const geminiRes = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${this.apiKeys[0]}`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    messages: [
-                        { role: "system", content: "You are 'Master AI', an intelligent assistant. You must reply concisely and naturally in Bengali language only." },
-                        { role: "user", content: promptText }
-                    ],
-                    model: "openai" 
-                })
+                body: JSON.stringify({ contents: contentsArray })
             });
             
-            const data = await res.json();
+            const geminiData = await geminiRes.json();
+            
+            if (!geminiRes.ok) throw new Error("Gemini API Failed");
+            
             document.getElementById(loadingId).remove();
+            let reply = geminiData.candidates[0].content.parts[0].text;
+            this.appendMsg('agent', reply);
+            this.speak(reply);
+            this.removeFile();
 
-            if (data.choices && data.choices[0].message) {
-                let reply = data.choices[0].message.content;
-                this.appendMsg('agent', reply);
-                this.speak(reply);
-                this.removeFile();
-            } else {
-                throw new Error("No Data");
-            }
         } catch (e) {
-            document.getElementById(loadingId).remove();
-            this.appendMsg('agent', `মাস্টার, নেটওয়ার্কে সমস্যা হচ্ছে!`);
-            this.isLiveMode = false; // নেটওয়ার্ক এরর হলে মাইক লুপ বন্ধ করবে
+            // ২. অটোমেটিক ব্যাকআপ ব্রেইনে সুইচ (Pollinations)
+            try {
+                let promptText = text;
+                if (hasFile) promptText += ` (Context file: ${fileName})`;
+
+                const fallbackRes = await fetch(`https://text.pollinations.ai/openai`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        messages: [
+                            { role: "system", content: "You are 'Master AI', an intelligent assistant. Reply concisely in Bengali." },
+                            { role: "user", content: promptText }
+                        ],
+                        model: "openai" 
+                    })
+                });
+                
+                const fallbackData = await fallbackRes.json();
+                document.getElementById(loadingId).remove();
+
+                if (fallbackData.choices && fallbackData.choices[0].message) {
+                    let reply = fallbackData.choices[0].message.content;
+                    this.appendMsg('agent', reply + " ⚠️ (ব্যাকআপ ব্রেইন থেকে উত্তর দেওয়া হয়েছে)");
+                    this.speak(reply);
+                    this.removeFile();
+                } else {
+                    throw new Error("No Data");
+                }
+            } catch (err) {
+                document.getElementById(loadingId).remove();
+                this.appendMsg('agent', `মাস্টার, নেটওয়ার্কে সমস্যা হচ্ছে!`);
+                this.isLiveMode = false;
+            }
         }
     },
 
@@ -152,7 +178,7 @@ const masterAgent = {
             rec.lang = 'bn-IN';
             this.micBtn.onclick = () => { 
                 this.micBtn.style.background = "#e8eaed"; 
-                this.isLiveMode = true; // মাইক অন করলেই লাইভ মোড চালু
+                this.isLiveMode = true; 
                 rec.start(); 
             };
             rec.onresult = (e) => { 
@@ -162,7 +188,7 @@ const masterAgent = {
             };
             rec.onerror = () => { 
                 this.micBtn.style.background = "#fff"; 
-                this.isLiveMode = false; // এরর হলে লাইভ মোড বন্ধ
+                this.isLiveMode = false; 
             };
         }
     }
