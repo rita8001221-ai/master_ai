@@ -565,54 +565,134 @@
     const app = initializeApp(firebaseConfig);
     console.log("Welcome Boss! Firebase is connected successfully.");
 </script>
-    <!-- 👑 Master AI Supreme Agent Card (Owner Panel Only) -->
-<div id="supreme-agent-card" style="background: #ffffff; border: 1px solid #e5e7eb; border-radius: 12px; padding: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); margin-top: 20px; margin-bottom: 20px;">
     
-    <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #f3f4f6; padding-bottom: 12px; margin-bottom: 15px;">
-        <span style="font-size: 20px; font-weight: 800; color: #111827;">🤖 Developer Agent (Owner)</span>
-        <button onclick="masterAgent.stop()" style="background: #ef4444; color: white; border: none; padding: 6px 15px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 13px;">🛑 চুপ</button>
+<!-- 🤖 Master AI (Perfect UI with Multiple API Keys & File Upload) -->
+<div class="normal-card" id="master-ai-card" style="background: #ffffff; border: 1px solid #e5e7eb; border-radius: 16px; padding: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin-bottom: 20px;">
+
+    <!-- Top Header -->
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; border-bottom: 1px solid #f3f4f6; padding-bottom: 10px;">
+        <span style="font-size: 18px; font-weight: bold; color: #1e3a8a; display: flex; align-items: center; gap: 8px;">
+            <svg fill="#1a73e8" width="22" height="22" viewBox="0 0 24 24"><path d="M12 2L14.4 9.6L22 12L14.4 14.4L12 22L9.6 14.4L2 12L9.6 9.6L12 2Z"/></svg>
+            Master AI (Owner Panel)
+        </span>
+        <button onclick="masterAgent.stop()" style="background: #ef4444; color: white; border: none; padding: 4px 12px; border-radius: 20px; cursor: pointer; font-size: 12px; font-weight: bold; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">🛑 চুপ</button>
     </div>
 
-    <!-- Agent Memory & Chat Area -->
-    <div id="master-chat-box" style="height: 350px; overflow-y: auto; background: #f9fafb; padding: 15px; border-radius: 8px; display: flex; flex-direction: column; gap: 12px; margin-bottom: 15px; border: 1px solid #f3f4f6;">
-        <!-- চ্যাট এখানে আসবে -->
+    <!-- Chat History Area -->
+    <div id="master-chat-history" style="background: #ffffff; height: 320px; overflow-y: auto; display: flex; flex-direction: column; gap: 15px; margin-bottom: 15px; padding-right: 5px;">
     </div>
 
-    <!-- Command Input -->
-    <div style="display: flex; gap: 10px;">
-        <button id="master-mic" style="background: #f3f4f6; border: 1px solid #d1d5db; padding: 12px 15px; border-radius: 8px; cursor: pointer; font-size: 18px; transition: 0.3s;" title="ভয়েস কমান্ড">🎤</button>
-        <input type="text" id="master-input" placeholder="মাস্টার, এ-টু-জেড যেকোনো কমান্ড দিন..." style="flex: 1; padding: 12px 15px; border: 1px solid #d1d5db; border-radius: 8px; font-size: 15px; outline: none; background: #fff;">
-        <button onclick="masterAgent.send()" style="background: #10b981; color: white; border: none; padding: 12px 25px; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 15px;">Send</button>
+    <!-- File Preview Box -->
+    <div id="file-preview-box" style="display: none; background: #e8eaed; padding: 5px 10px; border-radius: 8px; margin-bottom: 10px; font-size: 13px; color: #1a73e8; font-weight: bold;">
+        📎 <span id="file-name-text">ফাইল সিলেক্ট করা হয়েছে</span>
+        <button onclick="masterAgent.removeFile()" style="background: none; border: none; color: #ef4444; margin-left: 10px; cursor: pointer; font-weight: bold;">✖ মুছে ফেলুন</button>
+    </div>
+
+    <!-- Input Box (Screenshot Style) -->
+    <div style="display: flex; gap: 12px; align-items: center; background: #f0f4f9; padding: 10px 15px; border-radius: 30px;">
+        
+        <!-- File Upload -->
+        <input type="file" id="ai-file-upload" style="display: none;" accept="image/*,.pdf,.doc,.docx" onchange="masterAgent.handleFileUpload(event)">
+        <label for="ai-file-upload" style="cursor: pointer; display: flex; align-items: center;" title="ছবি আপলোড করুন">
+            <svg style="color: #444746; min-width: 24px;" width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+        </label>
+
+        <!-- Sliders -->
+        <svg style="color: #444746; cursor: pointer; min-width: 24px;" width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M3 17v2h6v-2H3zM3 5v2h10V5H3zm10 16v-2h8v-2h-8v-2h-2v6h2zM7 9v2H3v2h4v2h2V9H7zm14 4v-2H11v2h10zm-6-4h2V7h4V5h-4V3h-2v6z"/></svg>
+
+        <!-- Text Input -->
+        <input type="text" id="ai-command-input" placeholder="Master AI-কে প্রশ্ন করুন" style="flex: 1; border: none; outline: none; background: transparent; font-size: 16px; color: #1f1f1f; min-width: 80px;">
+
+        <!-- Pro Button -->
+        <span style="border: 1px solid #dadce0; border-radius: 20px; padding: 4px 12px; font-size: 13px; font-weight: 500; color: #444746; background: #fff; cursor: pointer;">Pro</span>
+
+        <!-- Mic Button -->
+        <button id="master-mic-btn" style="background: #fff; border: 1px solid #dadce0; border-radius: 50%; width: 40px; height: 40px; display: flex; justify-content: center; align-items: center; cursor: pointer; transition: 0.3s;" title="ভয়েস কমান্ড">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="#444746"><path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3zm5.3-3c0 3-2.54 5.1-5.3 5.1S6.7 14 6.7 11H5c0 3.41 2.72 6.23 6 6.72V21h2v-3.28c3.28-.48 6-3.3 6-6.72h-1.7z"/></svg>
+        </button>
+
+        <!-- Send Button -->
+        <button onclick="masterAgent.send()" style="background: #e8eaed; border: none; border-radius: 50%; width: 40px; height: 40px; display: flex; justify-content: center; align-items: center; cursor: pointer; transition: 0.3s;">
+             <svg width="22" height="22" viewBox="0 0 24 24" fill="#1a73e8"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+        </button>
     </div>
 </div>
 
 <script>
 const masterAgent = {
-    memory: [], // এজেন্টের মেমোরি স্টোরেজ
-    chatBox: document.getElementById('master-chat-box'),
-    input: document.getElementById('master-input'),
-    mic: document.getElementById('master-mic'),
+    historyDiv: document.getElementById('master-chat-history'),
+    inputField: document.getElementById('ai-command-input'),
+    micBtn: document.getElementById('master-mic-btn'),
+    previewBox: document.getElementById('file-preview-box'),
+    fileNameText: document.getElementById('file-name-text'),
     
+    // 🧠 মাল্টিপল API Keys (ব্রেইন) - একটার লিমিট শেষ হলে অটোমেটিক পরেরটায় যাবে
+    apiKeys: [
+        "AQ.Ab8RN6K8ABPhUlRYj5yZP93H_laX4jFXR82_xFLXMSxSnrfJIA", // আপনার প্রথম আসল API Key
+        "YOUR_SECOND_API_KEY_HERE", // এখানে দ্বিতীয় API Key বসাতে পারবেন
+        "YOUR_THIRD_API_KEY_HERE"   // এখানে তৃতীয় API Key বসাতে পারবেন
+    ],
+    currentKeyIndex: 0, 
+    
+    uploadedFileBase64: null,
+    uploadedFileMime: null,
+
     init: function() {
-        this.addMsg('agent', 'জি মাস্টার! আমি আপনার সুপ্রিম ডেভেলপার এজেন্ট। এ-টু-জেড কন্ট্রোল, নতুন এজেন্ট তৈরি, রোল দেওয়া বা যেকোনো অ্যাডভান্সড কমান্ডের জন্য আমি রেডি!');
+        this.appendMsg('agent', 'জি মাস্টার! মাল্টিপল ব্রেইন অ্যাক্টিভ করা হয়েছে। ছবি আপলোড করুন বা নির্দেশ দিন, আমি তৈরি!');
         this.setupMic();
-        this.input.addEventListener('keypress', (e) => { if(e.key === 'Enter') this.send(); });
+        this.inputField.addEventListener('keypress', (e) => { if (e.key === 'Enter') this.send(); });
     },
-    
-    addMsg: function(sender, text) {
+
+    handleFileUpload: function(event) {
+        const file = event.target.files[0];
+        if(!file) return;
+        this.fileNameText.innerText = file.name;
+        this.previewBox.style.display = 'block';
+
+        const reader = new FileReader();
+        reader.onloadend = () => {
+            this.uploadedFileBase64 = reader.result.split(',')[1];
+            this.uploadedFileMime = file.type;
+        };
+        reader.readAsDataURL(file);
+    },
+
+    removeFile: function() {
+        this.uploadedFileBase64 = null;
+        this.uploadedFileMime = null;
+        this.previewBox.style.display = 'none';
+        document.getElementById('ai-file-upload').value = "";
+    },
+
+    appendMsg: function(sender, text) {
         let div = document.createElement('div');
-        div.style.padding = '12px 18px'; div.style.borderRadius = '12px'; div.style.maxWidth = '85%'; div.style.lineHeight = '1.5'; div.style.fontSize = '15px';
-        
+        div.style.display = 'flex'; div.style.flexDirection = 'column'; div.style.marginBottom = '5px';
+
         if(sender === 'user') {
-            div.style.background = '#10b981'; div.style.color = '#fff'; div.style.alignSelf = 'flex-end'; div.style.borderBottomRightRadius = '2px';
+            div.style.alignSelf = 'flex-end'; div.style.background = '#f0f4f9'; div.style.padding = '12px 18px'; div.style.borderRadius = '20px'; div.style.borderBottomRightRadius = '4px'; div.style.maxWidth = '85%'; div.style.color = '#1f1f1f'; div.style.fontSize = '15px';
             div.innerText = text;
         } else {
-            div.style.background = '#e5e7eb'; div.style.color = '#1f2937'; div.style.alignSelf = 'flex-start'; div.style.borderBottomLeftRadius = '2px';
-            div.innerHTML = text + ` <span style="cursor:pointer; font-size: 18px; margin-left: 8px;" onclick="masterAgent.speak('${text}')">🔊</span>`;
-            this.memory.push({role: 'agent', text: text});
+            div.style.alignSelf = 'flex-start'; div.style.width = '100%';
+            let safeText = text.replace(/'/g, "\\'").replace(/"/g, '\\"').replace(/\n/g, ' ');
+
+            div.innerHTML = `
+                <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+                    <svg fill="#1a73e8" width="22" height="22" viewBox="0 0 24 24"><path d="M12 2L14.4 9.6L22 12L14.4 14.4L12 22L9.6 14.4L2 12L9.6 9.6L12 2Z"/></svg>
+                    <span style="font-size: 14px; color: #444746; display: flex; align-items: center; gap: 4px; cursor: pointer;">
+                        চিন্তাভাবনার অগ্রগতি দেখুন
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="#444746"><path d="M7 10l5 5 5-5z"/></svg>
+                    </span>
+                    <div style="margin-left: auto; background: #e8f0fe; border-radius: 50%; width: 34px; height: 34px; display: flex; justify-content: center; align-items: center; cursor: pointer;" onclick="masterAgent.speak('${safeText}')">
+                        <svg fill="#1a73e8" width="20" height="20" viewBox="0 0 24 24"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/></svg>
+                    </div>
+                </div>
+                <div style="font-size: 15px; color: #1f1f1f; line-height: 1.6; padding-left: 30px;">
+                    ${text.replace(/\n/g, '<br>')}
+                </div>
+            `;
         }
-        this.chatBox.appendChild(div);
-        this.chatBox.scrollTop = this.chatBox.scrollHeight;
+        this.historyDiv.appendChild(div);
+        this.historyDiv.scrollTop = this.historyDiv.scrollHeight;
     },
 
     speak: function(text) {
@@ -621,55 +701,91 @@ const masterAgent = {
         msg.lang = 'bn-IN'; msg.rate = 0.95;
         window.speechSynthesis.speak(msg);
     },
-    
+
     stop: function() { window.speechSynthesis.cancel(); },
-    
-    send: function() {
-        let text = this.input.value.trim();
-        if(!text) return;
-        this.addMsg('user', text);
-        this.memory.push({role: 'master', text: text}); // কমান্ড মেমোরিতে সেভ হচ্ছে
-        this.input.value = '';
-        this.processLogic(text.toLowerCase());
-    },
-    
-    // এ-টু-জেড ব্রেইন লজিক
-    processLogic: function(cmd) {
-        let reply = "";
+
+    send: async function() {
+        let text = this.inputField.value.trim();
+        let hasFile = (this.uploadedFileBase64 !== null);
         
-        if(cmd.includes("চুপ") || cmd.includes("স্টপ")) {
-            this.stop(); reply = "জি মাস্টার, আমি একদম চুপ হয়ে গেলাম।";
-        } 
-        else if(cmd.includes("এজেন্ট তৈরি") || cmd.includes("create agent")) {
-            reply = "মাস্টার, নতুন এজেন্ট তৈরির প্রোটোকল শুরু করেছি। দয়া করে এজেন্টের নাম এবং তার রোল (Role) আমাকে বলুন।";
-        } 
-        else if(cmd.includes("রোল") || cmd.includes("role") || cmd.includes("কাজ দাও")) {
-            reply = "জি মাস্টার! এজেন্টের রোল সাকসেসফুলি অ্যাসাইন করা হয়েছে। ব্যাকএন্ডে ডেটাবেস আপডেট করে দিয়েছি।";
-        } 
-        else {
-            reply = "মাস্টার, আপনার এই কমান্ড আমার মেমোরিতে সেভ হয়েছে। API কানেক্ট হওয়ার সাথে সাথেই আমি এই হুকুমটা এক্সিকিউট করে দেব। আর কোনো নির্দেশ আছে?";
+        if(!text && !hasFile) return;
+        
+        if(text) this.appendMsg('user', text);
+        if(hasFile) this.appendMsg('user', `[ফাইল আপলোড করা হয়েছে: ${this.fileNameText.innerText}]`);
+        
+        this.inputField.value = '';
+
+        if(text.toLowerCase().includes("চুপ") || text.toLowerCase().includes("স্টপ")) {
+            this.stop();
+            this.appendMsg('agent', "জি মাস্টার, আমি চুপ হয়ে গেলাম।");
+            this.removeFile();
+            return;
         }
-        
-        setTimeout(() => { this.addMsg('agent', reply); this.speak(reply); }, 800);
+
+        let loadingMsgDiv = document.createElement('div');
+        loadingMsgDiv.style.alignSelf = 'flex-start'; loadingMsgDiv.style.color = '#1a73e8'; loadingMsgDiv.style.marginBottom = '10px'; loadingMsgDiv.style.fontSize = '14px';
+        loadingMsgDiv.innerText = "মাস্টার, ভাবছি...";
+        this.historyDiv.appendChild(loadingMsgDiv);
+        this.historyDiv.scrollTop = this.historyDiv.scrollHeight;
+
+        let success = false;
+
+        // 🧠 অটোমেটিক API Key ফলব্যাক লজিক (লুপ)
+        while(!success && this.currentKeyIndex < this.apiKeys.length) {
+            try {
+                let contentsArray = [{ parts: [] }];
+                if(text) contentsArray[0].parts.push({ text: text });
+                if(hasFile) {
+                    contentsArray[0].parts.push({ inlineData: { mimeType: this.uploadedFileMime, data: this.uploadedFileBase64 } });
+                }
+
+                const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${this.apiKeys[this.currentKeyIndex]}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ contents: contentsArray })
+                });
+                
+                if (!res.ok) throw new Error("API Limit Reached"); // লিমিট শেষ হলে এরর থ্রো করবে
+                
+                const data = await res.json();
+                this.historyDiv.removeChild(loadingMsgDiv);
+
+                if (data.candidates && data.candidates[0].content) {
+                    let reply = data.candidates[0].content.parts[0].text;
+                    this.appendMsg('agent', reply);
+                    this.speak(reply);
+                    success = true;
+                    if(hasFile) this.removeFile();
+                } else {
+                    throw new Error("No Data");
+                }
+            } catch (e) {
+                // কারেন্ট এপিআই কি কাজ না করলে পরেরটায় সুইচ করবে
+                this.currentKeyIndex++;
+                if(this.currentKeyIndex < this.apiKeys.length) {
+                    loadingMsgDiv.innerText = `প্রথম API ব্রেইন বিজি! অটোমেটিক ${this.currentKeyIndex + 1} নম্বর ব্রেইনে সুইচ করছি...`;
+                } else {
+                    this.historyDiv.removeChild(loadingMsgDiv);
+                    this.appendMsg('agent', "মাস্টার, আপনার সবকটি API Key-এর লিমিট শেষ বা নেটওয়ার্ক এরর!");
+                }
+            }
+        }
+        // যদি সব কি ফেল করার পরেও ফাইল থেকে যায়, তবে মুছে দেবে
+        if(!success && hasFile) this.removeFile();
     },
-    
+
     setupMic: function() {
         const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
         if(SpeechRec) {
             const rec = new SpeechRec(); rec.lang = 'bn-IN';
-            this.mic.onclick = () => { this.mic.style.background = '#ef4444'; this.mic.style.color = '#fff'; rec.start(); };
-            rec.onresult = (e) => { this.mic.style.background = '#f3f4f6'; this.mic.style.color = '#000'; this.input.value = e.results[0][0].transcript; this.send(); };
-            rec.onerror = () => { this.mic.style.background = '#f3f4f6'; this.mic.style.color = '#000'; };
+            this.micBtn.onclick = () => { this.micBtn.style.background = "#e8eaed"; rec.start(); };
+            rec.onresult = (e) => { this.micBtn.style.background = "#fff"; this.inputField.value = e.results[0][0].transcript; this.send(); };
+            rec.onerror = () => { this.micBtn.style.background = "#fff"; };
         }
     }
 };
-
-// এজেন্ট চালু করা
-window.onload = function() {
-    masterAgent.init();
-};
+window.onload = function() { masterAgent.init(); };
 </script>
 
-    
 </body>
 </html>
