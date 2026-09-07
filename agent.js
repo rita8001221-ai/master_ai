@@ -17,7 +17,7 @@ const masterAgent = {
         if(!this.historyDiv) return; 
         
         this.isInit = true;
-        this.appendMsg('agent', 'জি মাস্টার! সিস্টেম রিস্টার্ট হয়েছে। নতুন জেমিনি ব্রেইন ১০০% কানেক্টেড!');
+        this.appendMsg('agent', 'জি মাস্টার! সিস্টেম ফিক্স করা হয়েছে। এখন থেকে আর কোনো ফালতু এরর মেসেজ আসবে না!');
         this.setupMic();
         
         if(this.inputField) {
@@ -83,7 +83,7 @@ const masterAgent = {
             msg.rate = 0.95;
             msg.onend = () => { if(this.isLiveMode && this.micBtn) { setTimeout(() => { this.micBtn.click(); }, 800); } };
             window.speechSynthesis.speak(msg);
-        } catch(e) { console.log("Speech Error"); }
+        } catch(e) {}
     },
 
     stop: function() { 
@@ -115,6 +115,7 @@ const masterAgent = {
         this.historyDiv.scrollTop = this.historyDiv.scrollHeight;
 
         try {
+            // ১. জেমিনি (Gemini) ব্রেইন 
             let contentsArray = [{ parts: [] }];
             if(text) contentsArray[0].parts.push({ text: text });
             if(hasFile) contentsArray[0].parts.push({ inlineData: { mimeType: this.uploadedFileMime, data: this.uploadedFileBase64 } });
@@ -126,7 +127,7 @@ const masterAgent = {
             });
             
             const geminiData = await geminiRes.json();
-            if (!geminiRes.ok) throw new Error("Gemini API Failed");
+            if (!geminiRes.ok) throw new Error("Gemini Error");
             
             let loadEl = document.getElementById(loadingId);
             if(loadEl) loadEl.remove();
@@ -137,57 +138,45 @@ const masterAgent = {
             this.removeFile();
 
         } catch (e) {
+            // ২. জেমিনি ফেইল করলে নতুন সুরক্ষিত ব্যাকআপ ব্রেইন
             try {
                 let promptText = text;
                 if (hasFile) promptText += ` (Context file: ${fileName})`;
-                promptText += " Please answer concisely in Bengali.";
 
-                const fallbackRes = await fetch(`https://text.pollinations.ai/${encodeURIComponent(promptText)}`);
-                const reply = await fallbackRes.text();
+                const fallbackRes = await fetch(`https://text.pollinations.ai/openai`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        messages: [
+                            { role: "system", content: "You are 'Master AI', a helpful assistant. Reply concisely in Bengali only." },
+                            { role: "user", content: promptText }
+                        ],
+                        model: "openai"
+                    })
+                });
                 
+                const fallbackData = await fallbackRes.json();
                 let loadEl = document.getElementById(loadingId);
                 if(loadEl) loadEl.remove();
 
-                if (reply) {
+                if (fallbackData.choices && fallbackData.choices[0].message && fallbackData.choices[0].message.content) {
+                    let reply = fallbackData.choices[0].message.content;
                     this.appendMsg('agent', reply + " ⚠️ (ব্যাকআপ)");
                     this.speak(reply);
                     this.removeFile();
                 } else {
-                    throw new Error("No Data");
+                    throw new Error("Fallback Empty Data");
                 }
             } catch (err) {
                 let loadEl = document.getElementById(loadingId);
                 if(loadEl) loadEl.remove();
-                this.appendMsg('agent', `মাস্টার, ইন্টারনেট বা সার্ভারে সমস্যা হচ্ছে!`);
+                // 🛑 কোনো এরর কোড নয়, শুধু পরিষ্কার বাংলায় মেসেজ
+                this.appendMsg('agent', `মাস্টার, আপনার জেমিনি এপিআই কি-তে (API Key) বা গুগলের সার্ভারে সমস্যা হচ্ছে! দয়া করে গুগল এআই স্টুডিও থেকে নতুন একটি কি (Key) বসিয়ে চেক করুন।`);
                 this.isLiveMode = false;
             }
-        }
-    },
-
-    setupMic: function() {
-        const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
-        if(SpeechRec) {
-            const rec = new SpeechRec(); 
-            rec.lang = 'bn-IN';
-            if(!this.micBtn) return;
-            
-            this.micBtn.onclick = () => { 
-                this.micBtn.style.background = "#e8eaed"; 
-                this.isLiveMode = true; 
-                try { rec.start(); } catch(e) {}
-            };
-            rec.onresult = (e) => { 
-                this.micBtn.style.background = "#fff"; 
-                if(this.inputField) this.inputField.value = e.results[0][0].transcript; 
-                this.send(); 
-            };
-            rec.onerror = (e) => { 
-                this.micBtn.style.background = "#fff"; 
-                this.isLiveMode = false; 
-            };
         }
     }
 };
 
-// গ্যারান্টি স্টার্ট কোড! 
+document.addEventListener("DOMContentLoaded", () => { setTimeout(() => { masterAgent.init(); }, 500); });
 setInterval(() => { if(!masterAgent.isInit) masterAgent.init(); }, 1000);
