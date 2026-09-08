@@ -1,5 +1,6 @@
 const masterAgent = {
-    apiKeys: ["AQ.Ab8RN6I52M16r9VJyh1qoGL0LS_p2y_3k8YGemxBzjoIYmAduA"],
+    // আপনার নতুন দেওয়া API Key এখানে সেট করা হয়েছে:
+    apiKeys: ["AQ.Ab8RN6JWXAYFqetkDaBWYcbRRVMYJ3yEJxoCHwMr4t9JllcaHg"],
     uploadedFileBase64: null,
     uploadedFileMime: null,
     isLiveMode: false,
@@ -17,7 +18,7 @@ const masterAgent = {
         if(!this.historyDiv) return; 
         
         this.isInit = true;
-        this.appendMsg('agent', 'জি মাস্টার! সিস্টেম ফিক্স করা হয়েছে। এখন থেকে আর কোনো ফালতু এরর মেসেজ আসবে না!');
+        this.appendMsg('agent', 'জি মাস্টার! নতুন কি (Key) সেট করা হয়েছে। জেমিনি ব্রেইন এখন রেডি!');
         this.setupMic();
         
         if(this.inputField) {
@@ -115,7 +116,7 @@ const masterAgent = {
         this.historyDiv.scrollTop = this.historyDiv.scrollHeight;
 
         try {
-            // ১. জেমিনি (Gemini) ব্রেইন 
+            // জেমিনি (Gemini) ব্রেইন কল
             let contentsArray = [{ parts: [] }];
             if(text) contentsArray[0].parts.push({ text: text });
             if(hasFile) contentsArray[0].parts.push({ inlineData: { mimeType: this.uploadedFileMime, data: this.uploadedFileBase64 } });
@@ -138,42 +139,36 @@ const masterAgent = {
             this.removeFile();
 
         } catch (e) {
-            // ২. জেমিনি ফেইল করলে নতুন সুরক্ষিত ব্যাকআপ ব্রেইন
-            try {
-                let promptText = text;
-                if (hasFile) promptText += ` (Context file: ${fileName})`;
+            let loadEl = document.getElementById(loadingId);
+            if(loadEl) loadEl.remove();
+            
+            // যদি এই নতুন কি-টাও কাজ না করে, তাহলে পরিষ্কার বাংলায় জানাবে
+            this.appendMsg('agent', `মাস্টার, গুগলের জেমিনি এপিআই এখনো উত্তর দিচ্ছে না। হয়তো নতুন কি-টা অ্যাক্টিভ হতে একটু সময় লাগছে বা লিমিট শেষ। দয়া করে কিছুক্ষণ পর আবার ট্রাই করুন।`);
+            this.isLiveMode = false;
+        }
+    },
 
-                const fallbackRes = await fetch(`https://text.pollinations.ai/openai`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        messages: [
-                            { role: "system", content: "You are 'Master AI', a helpful assistant. Reply concisely in Bengali only." },
-                            { role: "user", content: promptText }
-                        ],
-                        model: "openai"
-                    })
-                });
-                
-                const fallbackData = await fallbackRes.json();
-                let loadEl = document.getElementById(loadingId);
-                if(loadEl) loadEl.remove();
-
-                if (fallbackData.choices && fallbackData.choices[0].message && fallbackData.choices[0].message.content) {
-                    let reply = fallbackData.choices[0].message.content;
-                    this.appendMsg('agent', reply + " ⚠️ (ব্যাকআপ)");
-                    this.speak(reply);
-                    this.removeFile();
-                } else {
-                    throw new Error("Fallback Empty Data");
-                }
-            } catch (err) {
-                let loadEl = document.getElementById(loadingId);
-                if(loadEl) loadEl.remove();
-                // 🛑 কোনো এরর কোড নয়, শুধু পরিষ্কার বাংলায় মেসেজ
-                this.appendMsg('agent', `মাস্টার, আপনার জেমিনি এপিআই কি-তে (API Key) বা গুগলের সার্ভারে সমস্যা হচ্ছে! দয়া করে গুগল এআই স্টুডিও থেকে নতুন একটি কি (Key) বসিয়ে চেক করুন।`);
-                this.isLiveMode = false;
-            }
+    setupMic: function() {
+        const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
+        if(SpeechRec) {
+            const rec = new SpeechRec(); 
+            rec.lang = 'bn-IN';
+            if(!this.micBtn) return;
+            
+            this.micBtn.onclick = () => { 
+                this.micBtn.style.background = "#e8eaed"; 
+                this.isLiveMode = true; 
+                try { rec.start(); } catch(e) {}
+            };
+            rec.onresult = (e) => { 
+                this.micBtn.style.background = "#fff"; 
+                if(this.inputField) this.inputField.value = e.results[0][0].transcript; 
+                this.send(); 
+            };
+            rec.onerror = (e) => { 
+                this.micBtn.style.background = "#fff"; 
+                this.isLiveMode = false; 
+            };
         }
     }
 };
